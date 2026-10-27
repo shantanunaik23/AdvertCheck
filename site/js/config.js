@@ -4,7 +4,7 @@
 
 export const config = {
   // Public repository, shown as "Read the source code" in the footer.
-  repoUrl: null,
+  repoUrl: 'https://github.com/shantanunaik23/AdvertCheck',
 
   // The live ad-network check sends requests to third parties, which reveals
   // the visitor's IP address to them. Keep this false so it runs only after

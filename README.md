@@ -29,15 +29,11 @@ npm test
 
 ## Deploy to GitHub Pages
 
-1. Create an empty public repository on GitHub, for example `ad-mirror`.
-2. Push this folder:
-   ```sh
-   git remote add origin https://github.com/<you>/ad-mirror.git
-   git push -u origin main
-   ```
-3. In the repository, open **Settings → Pages** and set **Source** to **GitHub Actions**.
-4. The workflow in `.github/workflows/pages.yml` runs the tests, then publishes the `site/` folder. The site appears at `https://<you>.github.io/ad-mirror/`.
-5. Optional: set `repoUrl` in `site/js/config.js` to your repository URL, so the footer links to the source code.
+1. In the repository, open **Settings → Pages** and set **Source** to **GitHub Actions**.
+2. Push to `main`. The workflow in `.github/workflows/pages.yml` runs the tests, then publishes the `site/` folder.
+3. The site appears at `https://shantanunaik23.github.io/AdvertCheck/`.
+
+For a fork, change `repoUrl` in `site/js/config.js` so the footer links to your copy of the source code.
 
 ## Security
 
