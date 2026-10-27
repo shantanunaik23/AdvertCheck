@@ -1,0 +1,16 @@
+{
+  "name": "ad-mirror",
+  "version": "0.1.0",
+  "private": true,
+  "description": "See what every website learns about you the moment you arrive, and whether ad networks can reach your browser.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check",
+    "serve": "node scripts/serve.mjs",
+    "test": "node scripts/build.mjs --check && node tests/page.test.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}
