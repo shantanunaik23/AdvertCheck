@@ -3,6 +3,7 @@
 //   node scripts/make-icons.mjs
 
 import { readFile, mkdir } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
 
 const svg = await readFile(new URL('../../site/favicon.svg', import.meta.url), 'utf8');
@@ -16,7 +17,7 @@ for (const size of [16, 32, 48, 128]) {
     `<style>html,body{margin:0;background:transparent}svg{display:block;width:${size}px;height:${size}px}</style>${svg}`,
   );
   await page.screenshot({
-    path: new URL(`${size}.png`, out).pathname.replace(/^\/([A-Z]:)/, '$1'),
+    path: fileURLToPath(new URL(`${size}.png`, out)),
     omitBackground: true,
   });
   await page.close();
