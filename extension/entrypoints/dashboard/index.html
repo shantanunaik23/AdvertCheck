@@ -13,10 +13,16 @@
           <span class="brand-mark" id="brand-mark"></span>
           <span>Ad Mirror</span>
         </a>
-        <p class="chip chip-good" id="privacy-chip">Stored on this device only</p>
+        <div class="topbar-end">
+          <p class="chip chip-good" id="privacy-chip">Stored on this device only</p>
+          <label class="switch mode-switch" for="advanced">
+            <span>Advanced mode</span>
+            <input type="checkbox" role="switch" id="advanced" />
+          </label>
+        </div>
       </div>
     </header>
-    <div class="layout">
+    <div class="layout" id="layout">
       <nav class="nav" aria-label="Dashboard sections" id="nav"></nav>
       <main class="view" id="view" tabindex="-1" aria-live="polite"></main>
     </div>

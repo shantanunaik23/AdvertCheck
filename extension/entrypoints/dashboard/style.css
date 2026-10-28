@@ -404,3 +404,102 @@
   background: var(--surface);
   color: var(--ink);
 }
+
+/* Simple mode: one readable column, no side menu. */
+.topbar-end {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.mode-switch {
+  gap: 10px;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+.layout.simple {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 760px;
+}
+.layout.simple .nav {
+  display: none;
+}
+.layout.simple .view {
+  gap: 16px;
+}
+.layout.simple .view-head h1 {
+  font-size: 2rem;
+}
+.layout.simple .view-head p {
+  font-size: 1.0625rem;
+}
+.answer {
+  display: grid;
+  gap: 10px;
+  padding: 24px;
+}
+.answer h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.25rem;
+}
+.answer p,
+.answer li {
+  font-size: 1.0625rem;
+}
+.answer .big-number {
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+}
+.told-list {
+  display: grid;
+  gap: 12px;
+}
+.told-list li {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+.told-list .icon {
+  color: var(--warn);
+  margin-top: 3px;
+}
+.interest-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.interest-chips .chip {
+  font-size: 0.9375rem;
+  padding: 6px 14px;
+}
+.steps {
+  list-style: decimal;
+  padding-left: 1.4em;
+  display: grid;
+  gap: 10px;
+}
+.controls {
+  display: grid;
+  gap: 12px;
+  padding: 8px 0;
+}
+.banner-paused {
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  background: var(--warn-container);
+  color: var(--on-warn-container);
+  font-weight: 600;
+}
+@media (max-width: 760px) {
+  #privacy-chip {
+    display: none;
+  }
+  .answer .big-number {
+    font-size: 2.75rem;
+  }
+}

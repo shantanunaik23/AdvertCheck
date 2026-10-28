@@ -9,8 +9,10 @@ import { interests } from './views/interests';
 import { overview } from './views/overview';
 import { patterns } from './views/patterns';
 import { settings } from './views/settings';
+import { simple } from './views/simple';
 import { timeline } from './views/timeline';
 
+// Advanced mode: every detail, in sections. Simple mode shows one page.
 const ROUTES: { id: string; label: string; icon: IconName; view: View }[] = [
   { id: 'overview', label: 'Overview', icon: 'eye', view: overview },
   { id: 'companies', label: 'Companies', icon: 'building', view: companies },
@@ -20,8 +22,10 @@ const ROUTES: { id: string; label: string; icon: IconName; view: View }[] = [
   { id: 'settings', label: 'Settings', icon: 'settings', view: settings },
 ];
 
+const layout = document.getElementById('layout');
 const nav = document.getElementById('nav');
 const main = document.getElementById('view');
+const advancedSwitch = document.getElementById('advanced') as HTMLInputElement | null;
 document.getElementById('brand-mark')?.append(icon('logo'));
 document.getElementById('privacy-chip')?.prepend(icon('lock'));
 
@@ -31,20 +35,37 @@ function current() {
 }
 
 async function render(moveFocus = false) {
-  const route = current();
-  if (!route || !nav || !main) return;
-  nav.replaceChildren(
-    ...ROUTES.map((r) =>
-      el('a', { href: `#${r.id}`, ...(r === route && { 'aria-current': 'page' }) }, icon(r.icon), r.label),
-    ),
-  );
+  if (!layout || !nav || !main) return;
   const [events, s] = await Promise.all([eventsSince(0), settingsItem.getValue()]);
   const ctx: Ctx = { events, settings: s, refresh: () => render() };
-  main.replaceChildren(...(await route.view(ctx)));
-  document.title = `${route.label} · Ad Mirror`;
+  if (advancedSwitch) advancedSwitch.checked = s.advanced;
+  layout.classList.toggle('simple', !s.advanced);
+
+  if (!s.advanced) {
+    nav.replaceChildren();
+    main.replaceChildren(...(await simple(ctx)));
+    document.title = 'Your week in ads · Ad Mirror';
+  } else {
+    const route = current();
+    if (!route) return;
+    nav.replaceChildren(
+      ...ROUTES.map((r) =>
+        el('a', { href: `#${r.id}`, ...(r === route && { 'aria-current': 'page' }) }, icon(r.icon), r.label),
+      ),
+    );
+    main.replaceChildren(...(await route.view(ctx)));
+    document.title = `${route.label} · Ad Mirror`;
+  }
   if (moveFocus) main.focus();
 }
 
+advancedSwitch?.addEventListener('change', () => {
+  void settingsItem.getValue().then(async (s) => {
+    await settingsItem.setValue({ ...s, advanced: advancedSwitch.checked });
+    if (advancedSwitch.checked) history.replaceState(null, '', '#overview');
+    await render(true);
+  });
+});
 window.addEventListener('hashchange', () => {
   void render(true);
 });

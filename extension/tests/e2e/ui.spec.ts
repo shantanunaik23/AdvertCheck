@@ -1,7 +1,7 @@
 import { test, expect } from './fixtures';
 import { axeViolations, backgroundWorker, serveFakeWeb, storedEvents } from './helpers';
 
-const VIEWS: [string, string][] = [
+const ADVANCED_VIEWS: [string, string][] = [
   ['overview', 'Your ad mirror'],
   ['companies', 'Who knows about you'],
   ['timeline', 'Timeline'],
@@ -10,7 +10,7 @@ const VIEWS: [string, string][] = [
   ['settings', 'Settings'],
 ];
 
-test('dashboard shows what was recorded, and every view is accessible', async ({ context, extensionId }) => {
+test('simple view by default, advanced mode on request, all accessible', async ({ context, extensionId }) => {
   await serveFakeWeb(context);
   const worker = backgroundWorker(context);
   const shop = await context.newPage();
@@ -18,21 +18,36 @@ test('dashboard shows what was recorded, and every view is accessible', async ({
   await expect.poll(async () => (await storedEvents(worker)).length, { timeout: 10_000 }).toBeGreaterThanOrEqual(5);
 
   const page = await context.newPage();
+  const dashboard = `chrome-extension://${extensionId}/dashboard.html`;
+  await page.goto(dashboard);
+
+  // Simple view: plain answers, no side menu.
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your week in ads');
+  await expect(page.getByText('advertising companies watched what you did online')).toBeVisible();
+  await expect(page.getByText('told Facebook you added “Desk Lamp” to your basket')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '1 website gave advertisers your email address' })).toBeVisible();
+  await expect(page.locator('#nav')).toBeHidden();
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
-    for (const [hash, title] of VIEWS) {
-      await page.goto(`chrome-extension://${extensionId}/dashboard.html#${hash}`);
+    expect(await axeViolations(page), `simple (${scheme})`).toEqual([]);
+  }
+
+  // Advanced mode shows every section, and is remembered.
+  await page.getByRole('switch', { name: 'Advanced mode' }).check();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your ad mirror');
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    for (const [hash, title] of ADVANCED_VIEWS) {
+      await page.goto(`${dashboard}#${hash}`);
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(title);
       expect(await axeViolations(page), `${hash} (${scheme})`).toEqual([]);
     }
   }
-
-  await page.goto(`chrome-extension://${extensionId}/dashboard.html#timeline`);
-  await expect(page.getByText('shop.example told Meta you added “Desk Lamp” to your basket')).toBeVisible();
+  await page.goto(`${dashboard}#timeline`);
   await expect(page.getByText('You clicked a Google Ads ad that led to shop.example')).toBeVisible();
 
-  await page.goto(`chrome-extension://${extensionId}/dashboard.html#overview`);
-  await expect(page.getByRole('heading', { name: 'Sites that sent your email or phone number' })).toBeVisible();
+  await page.getByRole('switch', { name: 'Advanced mode' }).uncheck();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your week in ads');
 });
 
 test('welcome and popup pages are accessible', async ({ context, extensionId }) => {
@@ -44,20 +59,20 @@ test('welcome and popup pages are accessible', async ({ context, extensionId }) 
   }
 });
 
-test('pausing in settings stops recording, and delete removes everything', async ({ context, extensionId }) => {
+test('pausing stops recording, and delete removes everything', async ({ context, extensionId }) => {
   await serveFakeWeb(context);
   const worker = backgroundWorker(context);
   const page = await context.newPage();
-  await page.goto(`chrome-extension://${extensionId}/dashboard.html#settings`);
-  await page.getByRole('switch', { name: 'Record while I browse' }).uncheck();
-  await expect(page.getByText('Paused. Nothing new is recorded')).toBeVisible();
+  await page.goto(`chrome-extension://${extensionId}/dashboard.html`);
+  await page.getByRole('button', { name: 'Pause recording' }).click();
+  await expect(page.getByText('Recording is paused.')).toBeVisible();
 
   const shop = await context.newPage();
   await shop.goto('https://shop.example/?gclid=paused');
   await shop.waitForTimeout(1500);
   expect(await storedEvents(worker)).toEqual([]);
 
-  await page.getByRole('switch', { name: 'Record while I browse' }).check();
+  await page.getByRole('button', { name: 'Start recording again' }).click();
   await shop.goto('https://shop.example/?gclid=resumed');
   await expect.poll(async () => (await storedEvents(worker)).length, { timeout: 10_000 }).toBeGreaterThan(0);
 

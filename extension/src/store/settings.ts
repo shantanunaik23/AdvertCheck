@@ -9,6 +9,8 @@ export interface Settings {
   retentionDays: number;
   /** Sites (registrable domains) the user does not want recorded. */
   excludedSites: string[];
+  /** Show the detailed views. Off by default: the simple view is for everyone. */
+  advanced: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -16,11 +18,16 @@ export const DEFAULT_SETTINGS: Settings = {
   recordSearchWords: true,
   retentionDays: 30,
   excludedSites: [],
+  advanced: false,
 };
 
 export const RETENTION_CHOICES = [7, 30, 90, 365] as const;
 
 export const settingsItem = storage.defineItem<Settings>('local:settings', {
   fallback: DEFAULT_SETTINGS,
-  version: 1,
+  version: 2,
+  migrations: {
+    // Version 2 added the simple view; existing users start in it too.
+    2: (old: Omit<Settings, 'advanced'>): Settings => ({ ...old, advanced: false }),
+  },
 });

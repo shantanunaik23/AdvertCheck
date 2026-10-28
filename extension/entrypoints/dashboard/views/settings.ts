@@ -1,8 +1,8 @@
 import { siteOf } from '../../../src/classify/site';
-import { deleteAll, eventsSince } from '../../../src/store/db';
+import { eventsSince } from '../../../src/store/db';
 import { RETENTION_CHOICES, settingsItem, type Settings } from '../../../src/store/settings';
 import { el, icon } from '../../../src/ui/dom';
-import { sectionTitle, viewHead, type Ctx, type View } from './context';
+import { deleteControls, sectionTitle, viewHead, type Ctx, type View } from './context';
 
 const REPO = 'https://github.com/shantanunaik23/AdvertCheck';
 
@@ -142,22 +142,7 @@ export const settings: View = (ctx) => {
     });
   });
 
-  const deleteBtn = el('button', { class: 'btn btn-outlined', type: 'button' }, icon('trash'), 'Delete everything');
-  const confirmRow = el('div', { class: 'actions-row', hidden: '' });
-  const confirmBtn = el('button', { class: 'btn btn-danger', type: 'button' }, 'Yes, delete all records');
-  const cancelBtn = el('button', { class: 'btn btn-text', type: 'button' }, 'Cancel');
-  confirmRow.append(el('p', { class: 'small' }, 'This cannot be undone.'), confirmBtn, cancelBtn);
-  deleteBtn.addEventListener('click', () => {
-    confirmRow.hidden = false;
-    confirmBtn.focus();
-  });
-  cancelBtn.addEventListener('click', () => {
-    confirmRow.hidden = true;
-    deleteBtn.focus();
-  });
-  confirmBtn.addEventListener('click', () => {
-    void deleteAll().then(ctx.refresh);
-  });
+  const { button: deleteBtn, confirmRow } = deleteControls(ctx);
 
   const yours = el(
     'section',

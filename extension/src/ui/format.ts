@@ -24,6 +24,11 @@ function reportedPhrase(e: ReportedEvent): string {
   return phrases[e.action];
 }
 
+/** What the user did, as a site told it: "bought “Desk lamp”". */
+export function toldPhrase(e: ReportedEvent): string {
+  return reportedPhrase(e);
+}
+
 /** One sentence describing a record. */
 export function describe(e: AdEvent): string {
   switch (e.kind) {

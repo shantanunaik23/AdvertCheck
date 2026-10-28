@@ -1,4 +1,4 @@
-import type { StoredEvent } from '../../../src/store/db';
+import { deleteAll, type StoredEvent } from '../../../src/store/db';
 import type { Settings } from '../../../src/store/settings';
 import { el, icon, type IconName } from '../../../src/ui/dom';
 
@@ -36,4 +36,25 @@ export function sectionTitle(title: string, link?: { href: string; label: string
 
 export function retentionText(days: number): string {
   return days === 365 ? 'the last year' : `the last ${String(days)} days`;
+}
+
+/** "Delete everything" with an inline confirmation step. */
+export function deleteControls(ctx: Ctx): { button: HTMLButtonElement; confirmRow: HTMLElement } {
+  const button = el('button', { class: 'btn btn-outlined', type: 'button' }, icon('trash'), 'Delete everything');
+  const confirmRow = el('div', { class: 'actions-row', hidden: '' });
+  const confirmBtn = el('button', { class: 'btn btn-danger', type: 'button' }, 'Yes, delete all records');
+  const cancelBtn = el('button', { class: 'btn btn-text', type: 'button' }, 'Cancel');
+  confirmRow.append(el('p', { class: 'small' }, 'This cannot be undone.'), confirmBtn, cancelBtn);
+  button.addEventListener('click', () => {
+    confirmRow.hidden = false;
+    confirmBtn.focus();
+  });
+  cancelBtn.addEventListener('click', () => {
+    confirmRow.hidden = true;
+    button.focus();
+  });
+  confirmBtn.addEventListener('click', () => {
+    void deleteAll().then(ctx.refresh);
+  });
+  return { button, confirmRow };
 }
