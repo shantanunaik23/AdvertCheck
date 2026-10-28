@@ -27,7 +27,7 @@ async function render() {
   const head = el(
     'header',
     { class: 'popup-head' },
-    el('span', { class: 'brand' }, el('span', { class: 'brand-mark' }, icon('logo')), 'Ad Mirror'),
+    el('span', { class: 'brand' }, el('span', { class: 'brand-mark' }, icon('logo')), 'They Spy'),
     el('span', { class: 'chip chip-good' }, icon('lock'), 'On this device only'),
   );
 
@@ -47,7 +47,7 @@ async function render() {
         { class: 'empty' },
         icon('eye'),
         el('h1', { class: 'setting-title' }, 'Nothing recorded on this page'),
-        el('p', { class: 'small' }, 'Ad Mirror only records websites, and only pages opened after it was installed.'),
+        el('p', { class: 'small' }, 'They Spy only watches websites, and only pages you open after installing it.'),
       ),
     );
   } else if (settings.excludedSites.includes(page.site)) {
@@ -109,8 +109,8 @@ function simplePage(site: string, companies: string[], told: ReportedEvent[]): N
         'h1',
         {},
         n === 0
-          ? 'No advertisers saw you here'
-          : `${plural(n, 'advertising company', 'advertising companies')} saw you here`,
+          ? 'No ad companies spotted here'
+          : `${plural(n, 'ad company is', 'ad companies are')} watching you here`,
       ),
       el('p', { class: 'muted' }, `on ${site}`),
     ),
@@ -133,7 +133,7 @@ function simplePage(site: string, companies: string[], told: ReportedEvent[]): N
         'p',
         { class: 'email-warning' },
         icon('mail'),
-        'This site also gave advertisers your email address, in a coded form.',
+        'This site also handed your email address to advertisers (scrambled, but they can still use it).',
       ),
     );
   }

@@ -1,4 +1,4 @@
-# Ad Mirror extension: plan
+# They Spy extension: plan
 
 Status: accepted · Last updated: 28 October 2026
 
@@ -37,7 +37,7 @@ Derived on demand from those records, never stored separately:
 - **Dashboard (extension page):** Overview · Who knows about you (companies) · Timeline · Interests · Patterns · Settings (pause, exclude sites, search recording on/off, retention period, export, delete everything).
 - **First run:** what is recorded, what is not, the search switch, and the permission explained in plain English. On Firefox it also asks for site access if it was not granted at install.
 
-Visual design follows `.claude/skills/ad-mirror-design` (same tokens as the website, light and dark, WCAG 2.2 AA).
+Visual design follows `.claude/skills/they-spy-design` (same tokens as the website, light and dark, WCAG 2.2 AA).
 
 ## Architecture
 
@@ -51,7 +51,7 @@ Visual design follows `.claude/skills/ad-mirror-design` (same tokens as the webs
           ──► search.ts     search page → query parameter
         │  third-party test via tldts (Public Suffix List)
         ▼
- events queue ──(batched, ≤1 s)──► IndexedDB "ad-mirror" (idb)   retention purge via alarms
+ events queue ──(batched, ≤1 s)──► IndexedDB "they-spy" (idb)   retention purge via alarms
         │
         ├─► storage.session: per-tab counts → toolbar badge
         ▼

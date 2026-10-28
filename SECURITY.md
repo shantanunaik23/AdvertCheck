@@ -1,6 +1,6 @@
 # Security policy
 
-Ad Mirror is a privacy tool, so security problems matter even when they look small.
+They Spy is a privacy tool, so security problems matter even when they look small.
 
 ## Reporting a vulnerability
 

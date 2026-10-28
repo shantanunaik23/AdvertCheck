@@ -1,4 +1,4 @@
-# Ad Mirror extension
+# They Spy extension
 
 Records, on your own device, what websites tell advertisers about you, and shows it back. Plan: [`docs/extension/plan.md`](../docs/extension/plan.md). Decisions: [`docs/adr/`](../docs/adr/).
 

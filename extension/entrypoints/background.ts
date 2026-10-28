@@ -57,7 +57,7 @@ export default defineBackground(() => {
       const items = applyToFeed(feeds.get(tabId) ?? [], events);
       feeds.set(tabId, items);
       if (settings.showAlerts) {
-        const message: FeedMessage = { type: 'ad-mirror/feed', items };
+        const message: FeedMessage = { type: 'they-spy/feed', items };
         // Fails harmlessly when the page has no feed script (yet).
         void browser.tabs.sendMessage(tabId, message).catch(() => undefined);
       }
@@ -86,7 +86,7 @@ export default defineBackground(() => {
   // The feed script asks for its page's alerts when it starts. Answer only
   // about the tab it runs in, and only to this extension's own scripts.
   browser.runtime.onMessage.addListener((message: FeedMessage, sender, sendResponse) => {
-    if (message.type !== 'ad-mirror/feed-hello' || sender.id !== browser.runtime.id) return false;
+    if (message.type !== 'they-spy/feed-hello' || sender.id !== browser.runtime.id) return false;
     const tabId = sender.tab?.id;
     if (tabId === undefined || sender.frameId !== 0) return false;
     void ready.then(() => {

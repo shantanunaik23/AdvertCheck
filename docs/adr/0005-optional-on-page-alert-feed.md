@@ -17,6 +17,6 @@ The owner wants people to see, while they browse, how much data each page hands 
 
 ## Consequences
 
-- While the feed is on, a page can detect that an Ad Mirror element is present. The setting says so.
+- While the feed is on, a page can detect that an They Spy element is present. The setting says so.
 - `scripts/check-manifest.mjs` now allows `scripting` and still forbids manifest content scripts and web-accessible resources.
 - The feed is tested end to end in Chromium. Firefox renders it from the same code but is not yet covered by automated tests.

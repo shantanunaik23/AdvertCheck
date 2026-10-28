@@ -503,3 +503,7 @@
     font-size: 2.75rem;
   }
 }
+.learn {
+  display: grid;
+  gap: 12px;
+}

@@ -1,8 +1,8 @@
-# Ad Mirror
+# They Spy
 
 See what every website learns about you the moment you arrive, and whether ad networks can reach your browser.
 
-Ad Mirror is a single static page. It has no server, no cookies and no analytics. Everything is worked out in the visitor's own browser.
+They Spy is a single static page. It has no server, no cookies and no analytics. Everything is worked out in the visitor's own browser.
 
 ## What it does
 
@@ -23,7 +23,7 @@ The page is laid out as: a **verdict** ("Advertisers can easily track this brows
 - **Real ad slot** (off by default, hidden until configured). Shows an ad served by Google Ad Manager. Needs your own ad unit. See [Live ad slot](#live-ad-slot).
 - **Save results.** Copy a text summary or download a JSON data file.
 
-Design, writing and accessibility standards, plus the sources for every privacy fact and setting path, are in `.claude/skills/ad-mirror-design/SKILL.md`. Read it before changing the page.
+Design, writing and accessibility standards, plus the sources for every privacy fact and setting path, are in `.claude/skills/they-spy-design/SKILL.md`. Read it before changing the page.
 
 ## Run locally
 

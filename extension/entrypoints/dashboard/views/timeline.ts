@@ -33,7 +33,7 @@ function matches(e: StoredEvent): boolean {
 export const timeline: View = (ctx) => {
   const head = viewHead(
     'Timeline',
-    `Everything Ad Mirror recorded over ${retentionText(ctx.settings.retentionDays)}, newest first. Page visits are left out to keep it readable.`,
+    `Everything They Spy recorded over ${retentionText(ctx.settings.retentionDays)}, newest first. Page visits are left out to keep it readable.`,
   );
   if (!ctx.events.length) return [head, emptyState('clock', 'Nothing yet', 'Records appear here as you browse.')];
 

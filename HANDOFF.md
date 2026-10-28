@@ -34,7 +34,7 @@ Progress (28 October 2026):
 - **No web fonts, no third-party scripts, no storage, no analytics.** Any of these would leak visits to a third party.
 - **Every outside server is listed in `site/js/config.js`.** `scripts/build.mjs` generates the CSP from it, and CI fails if they drift.
 - **DOM is built with `textContent` only**, never `innerHTML`.
-- **Redesign (28 October 2026).** The page now leads with a verdict, then a privacy checkup where every failed check has fixes for the visitor's own browser, then the full details, then account links. It follows Material 3 style and is written for a reading age of about 9. The standards, the research behind them and the sources are in `.claude/skills/ad-mirror-design/SKILL.md`. Load that skill before changing the site.
+- **Redesign (28 October 2026).** The page now leads with a verdict, then a privacy checkup where every failed check has fixes for the visitor's own browser, then the full details, then account links. It follows Material 3 style and is written for a reading age of about 9. The standards, the research behind them and the sources are in `.claude/skills/they-spy-design/SKILL.md`. Load that skill before changing the site.
 - **Unfinished features stay hidden.** The live ad slot card only appears when `adSlot` is configured. The extension is mentioned once in the footer's "Coming next".
 - **Recommended tools:** uBlock Origin Lite (all major browsers), uBlock Origin (Firefox) and Privacy Badger (to send the do-not-sell signal). All are free, open source and not commercial. Re-check that the advice in `site/js/advice.js` is still current about every six months.
 

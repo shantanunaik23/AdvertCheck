@@ -14,7 +14,7 @@ export const overview: View = ({ events, settings }) => {
       emptyState(
         'eye',
         'Nothing recorded yet',
-        'Browse as you normally do. Ad Mirror records quietly in the background; come back later to see what it found.',
+        'Browse as you normally do. They Spy records quietly in the background; come back later to see what it found.',
       ),
       limits(),
     ];
@@ -105,7 +105,7 @@ function limits(): HTMLElement {
   return el(
     'section',
     { class: 'card' },
-    sectionTitle('What Ad Mirror cannot see'),
+    sectionTitle('What They Spy cannot see'),
     el(
       'ul',
       { class: 'rows' },

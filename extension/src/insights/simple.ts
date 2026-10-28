@@ -14,9 +14,9 @@ export function trackingLevel(companies: number): TrackingLevel {
 }
 
 export const LEVEL_TEXT: Record<TrackingLevel, string> = {
-  none: 'Private',
-  some: 'Some tracking',
-  lots: 'Lots of tracking',
+  none: 'Looks private',
+  some: 'Some spying',
+  lots: 'Lots of spying',
 };
 
 export interface WeekSummary {

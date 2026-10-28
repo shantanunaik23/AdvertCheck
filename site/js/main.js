@@ -279,7 +279,7 @@ function updateAudit() {
 function reportText() {
   const s = state.summary;
   const yesNo = (v) => (v === undefined ? 'not run' : v ? 'protected' : 'not protected');
-  const lines = ['Ad Mirror results', `Date: ${new Date().toISOString().slice(0, 10)}`, ''];
+  const lines = ['They Spy results', `Date: ${new Date().toISOString().slice(0, 10)}`, ''];
   if (s) {
     lines.push(`Result: ${$('verdict-title').textContent}`, `Device: ${deviceLabel(s)}`, `Browser: ${s.browser}`, `Fingerprint ID: ${s.fingerprintId}`, '');
   }
@@ -310,7 +310,7 @@ function setupReport() {
   $('download-report').addEventListener('click', () => {
     const data = { date: new Date().toISOString(), summary: state.summary, checks: state.checks, signals: state.signals, adBlocker: state.bait, servers: state.live, adSlot: state.adSlot };
     const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
-    const a = el('a', { href: url, download: `ad-mirror-${data.date.slice(0, 10)}.json` });
+    const a = el('a', { href: url, download: `they-spy-${data.date.slice(0, 10)}.json` });
     document.body.append(a);
     a.click();
     a.remove();

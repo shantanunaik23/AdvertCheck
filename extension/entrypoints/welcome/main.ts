@@ -19,12 +19,12 @@ async function render() {
   const hero = el(
     'header',
     { class: 'hero' },
-    el('span', { class: 'brand' }, el('span', { class: 'brand-mark' }, icon('logo')), 'Ad Mirror'),
-    el('h1', {}, 'Ad Mirror is installed'),
+    el('span', { class: 'brand' }, el('span', { class: 'brand-mark' }, icon('logo')), 'They Spy'),
+    el('h1', {}, 'They Spy is installed'),
     el(
       'p',
       {},
-      'From now on it quietly records what websites tell advertisers about you, so you can see it for yourself. Everything stays on this device.',
+      'Websites quietly tell ad companies what you look at and buy, so they can follow you around and get you spending. They Spy shows you who’s watching and what they know. It all stays on this device.',
     ),
   );
 
@@ -39,7 +39,7 @@ async function render() {
       el(
         'section',
         { class: 'card access', role: 'alert' },
-        el('strong', {}, 'One more step: Ad Mirror cannot see any websites yet.'),
+        el('strong', {}, 'One more step: They Spy cannot see any websites yet.'),
         el('p', {}, 'Your browser asks you to allow this separately. Without it, nothing is recorded.'),
         allow,
       ),
@@ -53,7 +53,7 @@ async function render() {
       el(
         'section',
         { class: 'card yes' },
-        el('h2', {}, icon('eye'), 'What it records'),
+        el('h2', {}, icon('eye'), 'What it keeps an eye on'),
         list('', 'check', [
           'Which ad and tracking companies see each site you visit',
           'What sites tell them you did, like adding something to your basket',
@@ -64,7 +64,7 @@ async function render() {
       el(
         'section',
         { class: 'card no' },
-        el('h2', {}, icon('lock'), 'What it never records'),
+        el('h2', {}, icon('lock'), 'What it never keeps'),
         list('', 'x', [
           'Full web addresses or page content',
           'Passwords, messages or form contents',
@@ -75,10 +75,10 @@ async function render() {
       el(
         'section',
         { class: 'card yes' },
-        el('h2', {}, icon('shield'), 'Where it goes'),
+        el('h2', {}, icon('shield'), 'Where it goes: nowhere'),
         list('', 'check', [
-          'Nowhere. It is stored only in this browser',
-          'Ad Mirror cannot connect to the internet at all',
+          'It’s stored only in this browser',
+          'They Spy can’t connect to the internet at all',
           'Records are deleted after 30 days, or sooner if you choose',
           'You can pause, export or delete everything at any time',
         ]),
@@ -132,14 +132,14 @@ async function render() {
       el(
         'p',
         {},
-        'Your browser said Ad Mirror can ',
+        'Your browser said They Spy can ',
         el('span', { class: 'warning-quote' }, '“read and change all your data on all websites”'),
         '. Browsers only let an extension see a request to an ad company if it can see the website that made it, so that wording is unavoidable.',
       ),
       el(
         'p',
         {},
-        'In practice Ad Mirror only watches which servers each page contacts. It never changes pages, never reads what you type, and cannot send anything anywhere. Its code is public for anyone to check.',
+        'In practice They Spy only watches which servers each page contacts. It never changes pages, never reads what you type, and cannot send anything anywhere. Its code is public for anyone to check.',
       ),
     ),
   );

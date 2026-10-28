@@ -1,6 +1,6 @@
 # Third-party notices
 
-Ad Mirror's own code is released under the MIT licence (see `LICENSE`). It includes or is derived from the work below.
+They Spy's own code is released under the MIT licence (see `LICENSE`). It includes or is derived from the work below.
 
 ## Shipped inside the extension
 

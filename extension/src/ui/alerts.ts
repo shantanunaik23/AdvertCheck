@@ -2,4 +2,4 @@
 
 export const ALERTS_TITLE = 'Show alerts on websites';
 export const ALERTS_TEXT =
-  'A small panel in the corner of each website shows which companies got your data, as it happens. Works on pages you open after switching it on. Websites can tell the panel is there.';
+  'Pops up in the corner of a website when it tells ad companies what you’re shopping for, like something you looked at or put in your basket. Works on pages you open after switching it on. Websites can tell it’s there.';

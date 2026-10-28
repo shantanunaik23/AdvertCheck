@@ -33,15 +33,15 @@ export function toldPhrase(e: ReportedEvent): string {
 export function describe(e: AdEvent): string {
   switch (e.kind) {
     case 'tracker':
-      return `${companyName(e.companyId)} saw your visit to ${e.site}`;
+      return `${companyName(e.companyId)} was watching when you visited ${e.site}`;
     case 'reported': {
       const told = `${e.site} told ${companyName(e.companyId)} you ${reportedPhrase(e)}`;
-      return e.identityShared ? `${told}, and sent your email or phone number in scrambled form` : told;
+      return e.identityShared ? `${told}, and handed over your email or phone number (scrambled)` : told;
     }
     case 'ad_click':
       return e.certain
-        ? `You clicked a ${e.platform} ad that led to ${e.site}`
-        : `You reached ${e.site} from a ${e.platform} link, which may have been an ad`;
+        ? `You clicked a ${e.platform} ad and landed on ${e.site}`
+        : `You came to ${e.site} from a ${e.platform} link (it may have been an ad)`;
     case 'search':
       return e.query ? `You searched ${e.engine} for ${q(e.query)}` : `You searched ${e.engine}`;
   }

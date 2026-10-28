@@ -15,7 +15,7 @@ export default defineConfig({
     includeSources: ['package.json', 'package-lock.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'extension/**'],
   },
   manifest: ({ browser }) => ({
-    name: 'Ad Mirror',
+    name: 'They Spy',
     description: 'See what websites tell advertisers about you. Everything stays on your device.',
     homepage_url: 'https://shantanunaik23.github.io/AdvertCheck/',
     permissions: ['webRequest', 'storage', 'alarms', 'scripting'],
@@ -30,7 +30,7 @@ export default defineConfig({
     ...(browser === 'firefox' && {
       browser_specific_settings: {
         gecko: {
-          id: 'ad-mirror@shantanunaik23.github.io',
+          id: 'they-spy@shantanunaik23.github.io',
           strict_min_version: '142.0',
           // Firefox's data consent: the extension collects nothing.
           data_collection_permissions: { required: ['none'] },

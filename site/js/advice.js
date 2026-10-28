@@ -1,5 +1,5 @@
 // Step-by-step fixes for the visitor's own browser.
-// Paths and products verified October 2026; see the ad-mirror-design skill
+// Paths and products verified October 2026; see the they-spy-design skill
 // for sources. Each fix is { intro?, steps: [{ text, link? }] }.
 
 export const BROWSER_NAMES = {

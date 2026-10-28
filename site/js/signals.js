@@ -109,9 +109,9 @@ function canvasPrint() {
     ctx.fillStyle = '#f60';
     ctx.fillRect(100, 1, 62, 20);
     ctx.fillStyle = '#069';
-    ctx.fillText('Ad Mirror, 1.0 \u{1F50D}', 2, 15);
+    ctx.fillText('They Spy, 1.0 \u{1F50D}', 2, 15);
     ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
-    ctx.fillText('Ad Mirror, 1.0 \u{1F50D}', 4, 17);
+    ctx.fillText('They Spy, 1.0 \u{1F50D}', 4, 17);
     ctx.globalCompositeOperation = 'multiply';
     ctx.fillStyle = 'rgb(255,0,255)';
     ctx.beginPath();
@@ -254,7 +254,7 @@ export async function collectSignals() {
     signal('Where you are', 'Languages', languages.map(languageName).join(', '), 'medium',
       'Shows your likely country and the language ads will be written in.'),
     signal('Where you are', 'IP address', 'Seen by every server you contact', 'high',
-      'Reveals your rough location and internet provider. Ad Mirror has no server, so it never sees yours.'),
+      'Reveals your rough location and internet provider. They Spy has no server, so it never sees yours.'),
 
     signal('Privacy settings', 'Do-not-sell signal', gpc ? 'On' : 'Off', 'low',
       'Asks sites not to sell or share your data. Sites must obey it in California and some other US states.', 'Global Privacy Control'),

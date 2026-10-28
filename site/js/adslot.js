@@ -8,7 +8,7 @@ const GPT_URL = 'https://securepubads.g.doubleclick.net/tag/js/gpt.js';
 
 export function runAdSlot(slotCfg, container) {
   return new Promise((resolve) => {
-    const divId = 'ad-mirror-slot';
+    const divId = 'they-spy-slot';
     const holder = document.createElement('div');
     holder.id = divId;
     holder.className = 'ad-slot';

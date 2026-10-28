@@ -7,7 +7,7 @@ const STRENGTH: Record<Interest['strength'], string> = { light: 'Light', medium:
 export const interests: View = ({ events }) => {
   const head = viewHead(
     'What advertisers could guess',
-    'An estimate of the interests ad companies could link to you, worked out from what this browser recorded. It is not what any company actually holds, and they also use data from apps, accounts and shops that Ad Mirror cannot see.',
+    'An estimate of the interests ad companies could link to you, worked out from what this browser recorded. It is not what any company actually holds, and they also use data from apps, accounts and shops that They Spy cannot see.',
   );
   const list = computeInterests(events);
   if (!list.length) {

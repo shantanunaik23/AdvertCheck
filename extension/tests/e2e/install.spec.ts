@@ -5,7 +5,7 @@ test('loads, starts its background worker and opens the welcome page once', asyn
   const welcome =
     context.pages().find((p) => p.url().endsWith('/welcome.html')) ?? (await context.waitForEvent('page'));
   await expect(welcome).toHaveURL(`chrome-extension://${extensionId}/welcome.html`);
-  await expect(welcome.getByRole('heading', { level: 1 })).toHaveText('Ad Mirror is installed');
+  await expect(welcome.getByRole('heading', { level: 1 })).toHaveText('They Spy is installed');
 });
 
 test('extension pages cannot make network requests', async ({ context, extensionId }) => {

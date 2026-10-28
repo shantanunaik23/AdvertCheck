@@ -11,7 +11,7 @@ interface Schema extends DBSchema {
   };
 }
 
-const DB_NAME = 'ad-mirror';
+const DB_NAME = 'they-spy';
 const DB_VERSION = 1;
 
 let db: Promise<IDBPDatabase<Schema>> | undefined;

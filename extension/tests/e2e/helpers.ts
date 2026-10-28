@@ -32,10 +32,10 @@ export async function storedEvents(worker: Worker): Promise<Row[]> {
   return worker.evaluate(async () =>
     // Opening a database that does not exist yet would create an empty one
     // and stop the extension from setting it up, so check first.
-    !(await indexedDB.databases()).some((d) => d.name === 'ad-mirror')
+    !(await indexedDB.databases()).some((d) => d.name === 'they-spy')
       ? []
       : new Promise<Row[]>((resolve, reject) => {
-          const open = indexedDB.open('ad-mirror');
+          const open = indexedDB.open('they-spy');
           open.onerror = () => {
             reject(new Error('open failed'));
           };

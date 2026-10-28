@@ -44,7 +44,7 @@ async function render(moveFocus = false) {
   if (!s.advanced) {
     nav.replaceChildren();
     main.replaceChildren(...(await simple(ctx)));
-    document.title = 'Your week in ads · Ad Mirror';
+    document.title = 'Your week in ads · They Spy';
   } else {
     const route = current();
     if (!route) return;
@@ -54,7 +54,7 @@ async function render(moveFocus = false) {
       ),
     );
     main.replaceChildren(...(await route.view(ctx)));
-    document.title = `${route.label} · Ad Mirror`;
+    document.title = `${route.label} · They Spy`;
   }
   if (moveFocus) main.focus();
 }

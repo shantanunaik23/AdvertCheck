@@ -23,9 +23,9 @@ test('simple view by default, advanced mode on request, all accessible', async (
 
   // Simple view: plain answers, no side menu.
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your week in ads');
-  await expect(page.getByText('advertising companies watched what you did online')).toBeVisible();
+  await expect(page.getByText('ad companies were keeping tabs on you')).toBeVisible();
   await expect(page.getByText('told Facebook you added “Desk Lamp” to your basket')).toBeVisible();
-  await expect(page.getByRole('heading', { name: '1 website gave advertisers your email address' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '1 website handed your email address to advertisers' })).toBeVisible();
   await expect(page.locator('#nav')).toBeHidden();
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
@@ -44,7 +44,7 @@ test('simple view by default, advanced mode on request, all accessible', async (
     }
   }
   await page.goto(`${dashboard}#timeline`);
-  await expect(page.getByText('You clicked a Google Ads ad that led to shop.example')).toBeVisible();
+  await expect(page.getByText('You clicked a Google Ads ad and landed on shop.example')).toBeVisible();
 
   await page.getByRole('switch', { name: 'Advanced mode' }).uncheck();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your week in ads');

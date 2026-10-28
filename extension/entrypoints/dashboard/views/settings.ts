@@ -42,7 +42,7 @@ export const settings: View = (ctx) => {
       'Record while I browse',
       s.paused
         ? 'Paused. Nothing new is recorded; what is already here is kept.'
-        : 'On. Ad Mirror records in the background.',
+        : 'On. They Spy records in the background.',
       !s.paused,
       (on) => {
         save(ctx, { paused: !on });
@@ -51,7 +51,7 @@ export const settings: View = (ctx) => {
     toggle(
       'words',
       'Keep the words I search for',
-      'When off, Ad Mirror only notes that you searched, for example “searched Google”, without the words.',
+      'When off, They Spy only notes that you searched, for example “searched Google”, without the words.',
       s.recordSearchWords,
       (on) => {
         save(ctx, { recordSearchWords: on });
@@ -133,7 +133,7 @@ export const settings: View = (ctx) => {
     void eventsSince(0).then((events) => {
       const data = { exported: new Date().toISOString(), settings: s, events };
       const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
-      const a = el('a', { href: url, download: `ad-mirror-${data.exported.slice(0, 10)}.json` });
+      const a = el('a', { href: url, download: `they-spy-${data.exported.slice(0, 10)}.json` });
       document.body.append(a);
       a.click();
       a.remove();
@@ -166,7 +166,7 @@ export const settings: View = (ctx) => {
     el(
       'p',
       { class: 'small' },
-      `Ad Mirror ${browser.runtime.getManifest().version}. Open source under the MIT licence. `,
+      `They Spy ${browser.runtime.getManifest().version}. Open source under the MIT licence. `,
       link(REPO, 'Read the code'),
     ),
     el(
@@ -181,7 +181,7 @@ export const settings: View = (ctx) => {
   );
 
   return [
-    viewHead('Settings', 'Control what Ad Mirror records and how long it keeps it.'),
+    viewHead('Settings', 'Control what They Spy records and how long it keeps it.'),
     recording,
     keeping,
     yours,

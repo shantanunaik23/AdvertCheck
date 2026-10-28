@@ -1,11 +1,11 @@
 ---
-name: ad-mirror-design
-description: Design, content and quality standards for the Ad Mirror website, plus researched facts about ad tracking and per-browser privacy settings (verified October 2026). Use before changing anything in site/ (layout, styles, wording, new sections or features), when writing privacy advice or claims about tracking, and before shipping, as a review checklist.
+name: they-spy-design
+description: Design, content and quality standards for the They Spy website, plus researched facts about ad tracking and per-browser privacy settings (verified October 2026). Use before changing anything in site/ (layout, styles, wording, new sections or features), when writing privacy advice or claims about tracking, and before shipping, as a review checklist.
 ---
 
-# Ad Mirror design standards
+# They Spy design standards
 
-Ad Mirror shows ordinary people how advertisers see them and what to do about it. The bar is a product a large company (Google, Apple, GOV.UK) would ship: anyone can use it on a phone, in a minute, with no jargon, and every claim on it is true.
+They Spy shows ordinary people how advertisers see them and what to do about it. The bar is a product a large company (Google, Apple, GOV.UK) would ship: anyone can use it on a phone, in a minute, with no jargon, and every claim on it is true.
 
 Read `HANDOFF.md` for the product plan and `README.md` for how the code works. This skill covers how to design and write for it.
 
@@ -29,7 +29,9 @@ Based on GOV.UK content design and the University of Reading research behind it,
 - Buttons say what happens: "Run the check", "Copy summary". Not "Submit", "Go", "Learn more".
 - Status text is a full answer, not a code: "Blocked: your browser stopped it", not "ERR".
 - Numbers as numerals ("3 of 12"). Dates as "16 February 2025".
-- No fear-mongering and no exclamation marks. State the fact and the fix calmly.
+- **Voice: casual, direct, a little cheeky, never alarmist** (owner's direction, October 2026). Talk like a friend who knows how ads work: contractions, everyday words ("ad companies", "keeping tabs on you", "chasing you round the web"), short sentences. Avoid slang that people learning English would not know. No exclamation marks.
+- **Explain the "so what".** Every finding says how it can change what people see, buy or pay: ads that follow you (retargeting), basket reminders, ads timed for when you are most likely to buy, prices set from personal data. Only use mechanisms that are well established or sourced in section 8; never invent effects or numbers.
+- **Who** uses brand names people know (Google, Facebook, TikTok, Amazon) and groups the rest as "other ad companies"; full company names live in Advanced mode.
 - UK English spelling (the owner is in the UK), but avoid region-only terms.
 
 ## 3. Information architecture
@@ -84,6 +86,11 @@ Core Web Vitals "good" thresholds (still current in 2026, 75th percentile): **LC
 ## 8. Verified facts (checked 28 October 2026)
 
 Re-check before relying on these after mid-2027. Sources are listed at the end.
+
+**How tracking changes what people buy and pay** (use these, with their caveats)
+- US FTC, 17 January 2025, preliminary findings of its surveillance pricing study: "details like a person's precise location or browser history can be frequently used to target individual consumers with different prices for the same good or service." The study is ongoing and the FTC has not said the practice is illegal; say "can be used", not "is used against you". Source: https://www.ftc.gov/news-events/news/press-releases/2025/01/ftc-surveillance-pricing-study-indicates-wide-range-personal-data-used-set-individualized-consumer (ftc.gov blocks curl; check it in a browser).
+- UK CMA (2021 algorithms paper; online choice architecture work since 2022) treats personalised pricing and pressure tactics such as false urgency or scarcity claims as consumer harms. Source: https://www.gov.uk/government/collections/online-choice-architecture-work
+- Retargeting (ads for things you viewed following you to other sites), basket and checkout reminders, and matching hashed emails to accounts are standard, documented ad-platform features; describe them plainly without numbers.
 
 **Tracking landscape**
 - Google allowed advertisers on its platforms to use fingerprinting and IP addresses from **16 February 2025** (announced 18–19 December 2024). The UK ICO called this "irresponsible" and said fingerprinting "could now replace the functions of third-party cookies".

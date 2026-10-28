@@ -37,6 +37,13 @@ describe('on-page feed', () => {
       email: true,
       sent: [...BASIC_DATA, 'You added “Desk lamp” to your basket', EMAIL_TEXT],
     });
+    // Shopping moments and email sharing become alerts, with why they matter.
+    expect(feed[0]?.highlights.map((h) => [h.kind, h.title])).toEqual([
+      ['shopping', 'Facebook now knows you added “Desk lamp” to your basket'],
+      ['email', 'This site just gave Facebook your email address'],
+    ]);
+    expect(feed[0]?.highlights[0]?.why).toMatch(/basket/);
+    expect(feed[1]?.highlights).toEqual([]);
   });
 
   it('does not repeat the same thing or list page views', () => {

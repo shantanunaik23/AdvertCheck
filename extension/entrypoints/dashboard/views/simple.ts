@@ -8,6 +8,8 @@ import { el, icon, plural } from '../../../src/ui/dom';
 import { toldPhrase } from '../../../src/ui/format';
 import { alertsSwitch, deleteControls, type View } from './context';
 
+const FTC =
+  'https://www.ftc.gov/news-events/news/press-releases/2025/01/ftc-surveillance-pricing-study-indicates-wide-range-personal-data-used-set-individualized-consumer';
 const CHECKUP = 'https://shantanunaik23.github.io/AdvertCheck/#checkup';
 
 const link = (href: string, text: string) =>
@@ -24,7 +26,11 @@ export const simple: View = (ctx) => {
     'div',
     { class: 'view-head' },
     el('h1', {}, 'Your week in ads'),
-    el('p', {}, 'What advertisers learned about you online in the last 7 days. This stays on this computer.'),
+    el(
+      'p',
+      {},
+      'Here’s what ad companies picked up about you online in the last 7 days. It all stays on this computer.',
+    ),
   );
 
   const nodes: Node[] = [head];
@@ -36,7 +42,7 @@ export const simple: View = (ctx) => {
         { class: 'card empty' },
         icon('eye'),
         el('h2', {}, 'Nothing to show yet'),
-        el('p', {}, 'Use the internet as you normally do. Come back in a day or two to see what advertisers learned.'),
+        el('p', {}, 'Browse like you normally would. Come back in a day or two to see who’s been watching.'),
       ),
     );
   } else {
@@ -48,9 +54,7 @@ export const simple: View = (ctx) => {
         el(
           'h2',
           {},
-          s.companies === 1
-            ? 'advertising company watched what you did online'
-            : 'advertising companies watched what you did online',
+          s.companies === 1 ? 'ad company was keeping tabs on you' : 'ad companies were keeping tabs on you',
         ),
         el('p', {}, `They include ${whoList(s.companyIds)}.`),
       ),
@@ -61,11 +65,16 @@ export const simple: View = (ctx) => {
         el(
           'section',
           { class: 'card answer alert-card' },
-          el('h2', {}, icon('mail'), `${plural(s.emailSites.length, 'website')} gave advertisers your email address`),
+          el(
+            'h2',
+            {},
+            icon('mail'),
+            `${plural(s.emailSites.length, 'website')} handed your email address to advertisers`,
+          ),
           el(
             'p',
             {},
-            'They sent it in a coded form. Advertisers use it to link what you do on these websites to your accounts with them.',
+            'It was scrambled first, but that doesn’t stop them using it. They match it to your account with them, so they can follow you even if you clear your cookies.',
           ),
           el(
             'div',
@@ -80,7 +89,7 @@ export const simple: View = (ctx) => {
       el(
         'section',
         { class: 'card answer' },
-        el('h2', {}, 'What shops told advertisers'),
+        el('h2', {}, 'What shops told advertisers about you'),
         s.told.length
           ? el(
               'ul',
@@ -94,7 +103,7 @@ export const simple: View = (ctx) => {
                 ),
               ),
             )
-          : el('p', { class: 'muted' }, 'No shops told advertisers what you did this week.'),
+          : el('p', { class: 'muted' }, 'No shops passed on what you did this week. Nice.'),
       ),
     );
 
@@ -102,22 +111,59 @@ export const simple: View = (ctx) => {
       el(
         'section',
         { class: 'card answer' },
-        el('h2', {}, 'What advertisers probably think you like'),
+        el('h2', {}, 'What they think you’re into'),
         s.interests.length
           ? el(
               'div',
               { class: 'interest-chips' },
               ...s.interests.map((i) => el('span', { class: 'chip chip-primary' }, i.name)),
             )
-          : el('p', { class: 'muted' }, 'Not enough yet to guess.'),
+          : el('p', { class: 'muted' }, 'Not enough to go on yet.'),
         el(
           'p',
           { class: 'small muted' },
-          'This is our best guess, from the websites you visit and what you search for.',
+          'Our best guess, from the sites you visit and what you search for. This is the picture they use to decide which ads to show you.',
         ),
       ),
     );
   }
+
+  nodes.push(
+    el(
+      'section',
+      { class: 'card answer' },
+      el('h2', {}, 'How this gets you to spend'),
+      el(
+        'ul',
+        { class: 'learn' },
+        el(
+          'li',
+          {},
+          el('strong', {}, 'Ads that follow you. '),
+          'Look at something once and ads for it can chase you round the web for weeks, until you give in.',
+        ),
+        el(
+          'li',
+          {},
+          el('strong', {}, 'Basket reminders. '),
+          'Leave something in your basket and expect ads, and often emails, nudging you to finish buying.',
+        ),
+        el(
+          'li',
+          {},
+          el('strong', {}, 'Good timing, for them. '),
+          'The more they know, the better they get at showing you ads when you’re most likely to buy.',
+        ),
+        el(
+          'li',
+          {},
+          el('strong', {}, 'Prices made for you. '),
+          'The US consumer regulator found that details like your location and browsing history can be used to charge different people different prices for the same thing. ',
+          link(FTC, 'Read the FTC’s findings'),
+        ),
+      ),
+    ),
+  );
 
   nodes.push(
     el(
@@ -140,7 +186,7 @@ export const simple: View = (ctx) => {
           el('strong', {}, 'Turn off personalised ads. '),
           link('https://myadcenter.google.com/', 'Google'),
           ' and ',
-          link('https://www.facebook.com/adpreferences/', 'Meta'),
+          link('https://www.facebook.com/adpreferences/', 'Facebook'),
           ' let you switch them off.',
         ),
         el(

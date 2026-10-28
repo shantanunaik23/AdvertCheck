@@ -4,7 +4,7 @@ Date: 2026-10-28 · Status: accepted
 
 ## Context
 
-Ad Mirror is built across several sessions and possibly several people. Decisions about privacy, security and dependencies need to survive between them.
+They Spy is built across several sessions and possibly several people. Decisions about privacy, security and dependencies need to survive between them.
 
 ## Decision
 
