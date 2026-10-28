@@ -10,7 +10,7 @@ It must be secure, run entirely locally, and be built to the standard of a profe
 
 ## Principles
 
-1. **Observe, never alter.** Version 1 only watches network requests. It injects nothing into web pages, so a hostile page has nothing to attack.
+1. **Observe, never alter.** The extension watches network requests. Nothing is placed in web pages unless the user turns on the optional alert feed (ADR 0005), which only displays and never reads the page.
 2. **Nothing leaves the device.** No servers, no analytics, no remote code, no remote lists. The extension's Content Security Policy blocks all network connections from its own pages.
 3. **Keep the least data that tells the story.** Store the site's domain, the company, the event name and the time. Never full URLs, page content or identifiers.
 4. **Honest labels.** Interests and patterns are estimates and say so. Known blind spots are shown in the extension.

@@ -55,8 +55,10 @@ export async function storedEvents(worker: Worker): Promise<Row[]> {
 }
 
 /** WCAG 2.2 AA violations on a page, as readable strings. */
-export async function axeViolations(page: Page): Promise<string[]> {
-  const { violations } = await new AxeBuilder({ page })
+export async function axeViolations(page: Page, include?: string): Promise<string[]> {
+  const builder = new AxeBuilder({ page });
+  if (include) builder.include(include);
+  const { violations } = await builder
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'])
     .analyze();
   return violations.map((v) => `${v.id}: ${v.help} (${v.nodes.map((n) => n.target.join(' ')).join(' | ')})`);

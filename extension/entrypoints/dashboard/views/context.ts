@@ -1,5 +1,6 @@
 import { deleteAll, type StoredEvent } from '../../../src/store/db';
-import type { Settings } from '../../../src/store/settings';
+import { settingsItem, type Settings } from '../../../src/store/settings';
+import { ALERTS_TEXT, ALERTS_TITLE } from '../../../src/ui/alerts';
 import { el, icon, type IconName } from '../../../src/ui/dom';
 
 export interface Ctx {
@@ -57,4 +58,19 @@ export function deleteControls(ctx: Ctx): { button: HTMLButtonElement; confirmRo
     void deleteAll().then(ctx.refresh);
   });
   return { button, confirmRow };
+}
+
+/** The "Show alerts on websites" switch, shared by the simple and advanced views. */
+export function alertsSwitch(ctx: Ctx, id = 'alerts'): HTMLElement {
+  const input = el('input', { type: 'checkbox', role: 'switch', id, 'aria-describedby': `${id}-text` });
+  input.checked = ctx.settings.showAlerts;
+  input.addEventListener('change', () => {
+    void settingsItem.setValue({ ...ctx.settings, showAlerts: input.checked }).then(ctx.refresh);
+  });
+  return el(
+    'div',
+    { class: 'setting' },
+    el('label', { class: 'switch', for: id }, el('span', { class: 'setting-title' }, ALERTS_TITLE), input),
+    el('p', { class: 'small muted', id: `${id}-text` }, ALERTS_TEXT),
+  );
 }

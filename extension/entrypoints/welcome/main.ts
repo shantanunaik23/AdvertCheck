@@ -1,6 +1,7 @@
 import '../../src/ui/base.css';
 import './style.css';
-import { settingsItem } from '../../src/store/settings';
+import { settingsItem, type Settings } from '../../src/store/settings';
+import { ALERTS_TEXT, ALERTS_TITLE } from '../../src/ui/alerts';
 import { el, icon, type IconName } from '../../src/ui/dom';
 
 const ALL_SITES = { origins: ['<all_urls>'] };
@@ -85,10 +86,19 @@ async function render() {
     ),
   );
 
+  // Each switch saves on top of the latest settings, so one does not undo another.
+  const save = (change: Partial<Settings>) =>
+    settingsItem.getValue().then((latest) => settingsItem.setValue({ ...latest, ...change }));
+
   const words = el('input', { type: 'checkbox', role: 'switch', id: 'words', 'aria-describedby': 'words-text' });
   words.checked = settings.recordSearchWords;
   words.addEventListener('change', () => {
-    void settingsItem.setValue({ ...settings, recordSearchWords: words.checked });
+    void save({ recordSearchWords: words.checked });
+  });
+  const alerts = el('input', { type: 'checkbox', role: 'switch', id: 'alerts', 'aria-describedby': 'alerts-text' });
+  alerts.checked = settings.showAlerts;
+  alerts.addEventListener('change', () => {
+    void save({ showAlerts: alerts.checked });
   });
   nodes.push(
     el(
@@ -105,6 +115,12 @@ async function render() {
         { class: 'small muted', id: 'words-text' },
         'Searches are one of the biggest clues advertisers use. Keeping the words shows you exactly what they could learn. Turn this off to record only that you searched.',
       ),
+    ),
+    el(
+      'section',
+      { class: 'card' },
+      el('label', { class: 'switch', for: 'alerts' }, el('span', { class: 'setting-title' }, ALERTS_TITLE), alerts),
+      el('p', { class: 'small muted', id: 'alerts-text' }, ALERTS_TEXT),
     ),
   );
 

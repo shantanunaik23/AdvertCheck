@@ -24,7 +24,7 @@ The plan is in `docs/extension/plan.md`, with decisions in `docs/adr/`. In short
 - **Browsers:** Chrome, Edge and Firefox.
 
 Progress (28 October 2026):
-- **Done:** milestones 1 (foundations), 2 (detection engine), 3 (interests and patterns) and 4 (popup, dashboard and welcome page). Everything is verified by `npm run verify` in `extension/`.
+- **Done:** milestones 1 (foundations), 2 (detection engine), 3 (interests and patterns) and 4 (popup, dashboard and welcome page), plus a simple default view with an Advanced mode, and an optional on-page alert feed (ADR 0005). Everything is verified by `npm run verify` in `extension/`.
 - **Next:** milestone 5 (extension page on the website, privacy policy, store listings), then real-device testing. Work is on the `redesign-and-extension` branch, pull request #1.
 
 ## Decisions made

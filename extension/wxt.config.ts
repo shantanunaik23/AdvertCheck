@@ -18,7 +18,7 @@ export default defineConfig({
     name: 'Ad Mirror',
     description: 'See what websites tell advertisers about you. Everything stays on your device.',
     homepage_url: 'https://shantanunaik23.github.io/AdvertCheck/',
-    permissions: ['webRequest', 'storage', 'alarms'],
+    permissions: ['webRequest', 'storage', 'alarms', 'scripting'],
     // Chrome reports a request only if the extension can access both the
     // tracker and the page that made it, so access to all sites is needed.
     host_permissions: ['<all_urls>'],

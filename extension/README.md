@@ -2,7 +2,7 @@
 
 Records, on your own device, what websites tell advertisers about you, and shows it back. Plan: [`docs/extension/plan.md`](../docs/extension/plan.md). Decisions: [`docs/adr/`](../docs/adr/).
 
-Status: milestones 1–4 done (foundations, detection, insights, interface). Next: website page and store listings (5).
+Status: milestones 1–4 done (foundations, detection, insights, interface), with a simple default view, Advanced mode and an optional on-page alert feed. Next: website page and store listings (5).
 
 Try it: `npm run build`, then load `.output/chrome-mv3` as an unpacked extension (chrome://extensions → Developer mode → Load unpacked), or run `npm run dev`.
 
@@ -44,6 +44,7 @@ For end-to-end tests, install the browser once: `npx playwright install chromium
 ## Rules
 
 - No network access: no `fetch`, XHR or WebSocket; the CSP blocks it anyway.
+- Nothing runs inside web pages unless the user turns on "Show alerts on websites" (ADR 0005). That script (`entrypoints/feed.ts`) only renders what the background sends about its own tab; `check:manifest` fails if it signals the page or uses the network.
 - No `innerHTML` or similar; build DOM with `textContent`.
 - New permissions need a decision record and an update to `scripts/check-manifest.mjs`.
 - Dependencies: exact versions, at least 14 days old, and as few as possible in the shipped code.

@@ -2,7 +2,7 @@ import { siteOf } from '../../../src/classify/site';
 import { eventsSince } from '../../../src/store/db';
 import { RETENTION_CHOICES, settingsItem, type Settings } from '../../../src/store/settings';
 import { el, icon } from '../../../src/ui/dom';
-import { deleteControls, sectionTitle, viewHead, type Ctx, type View } from './context';
+import { alertsSwitch, deleteControls, sectionTitle, viewHead, type Ctx, type View } from './context';
 
 const REPO = 'https://github.com/shantanunaik23/AdvertCheck';
 
@@ -57,6 +57,7 @@ export const settings: View = (ctx) => {
         save(ctx, { recordSearchWords: on });
       },
     ),
+    alertsSwitch(ctx, 'alerts-advanced'),
   );
 
   const retention = el('select', { id: 'retention' });

@@ -23,7 +23,8 @@ export interface PageState {
 export interface RecorderDeps {
   now: () => number;
   settings: () => Settings;
-  record: (events: AdEvent[]) => void;
+  /** New records, and the tab they came from. */
+  record: (events: AdEvent[], tabId: number) => void;
   /** Called when the number of companies for a tab changes (for the toolbar badge). */
   onCompanies: (tabId: number, count: number) => void;
   /** Called after tab state changes, so it can be persisted across worker restarts. */
@@ -97,7 +98,7 @@ export class Recorder {
     }
 
     if (events.length) {
-      this.deps.record(events);
+      this.deps.record(events, tabId);
       this.changed();
     }
   }
@@ -135,7 +136,7 @@ export class Recorder {
           : { kind: 'search', ts, site, engine: search.engine },
       );
     }
-    if (events.length) this.deps.record(events);
+    if (events.length) this.deps.record(events, tabId);
   }
 
   private changed(): void {

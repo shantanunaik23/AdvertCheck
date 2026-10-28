@@ -6,7 +6,7 @@ import { who, whoList } from '../../../src/ui/who';
 import { settingsItem } from '../../../src/store/settings';
 import { el, icon, plural } from '../../../src/ui/dom';
 import { toldPhrase } from '../../../src/ui/format';
-import { deleteControls, type View } from './context';
+import { alertsSwitch, deleteControls, type View } from './context';
 
 const CHECKUP = 'https://shantanunaik23.github.io/AdvertCheck/#checkup';
 
@@ -169,6 +169,7 @@ export const simple: View = (ctx) => {
       'section',
       { class: 'controls' },
       ctx.settings.paused ? el('p', { class: 'banner-paused', role: 'status' }, 'Recording is paused.') : null,
+      el('div', { class: 'card' }, alertsSwitch(ctx)),
       el('div', { class: 'actions-row' }, pause, deleteBtn),
       confirmRow,
       el('p', { class: 'small muted' }, 'Want every detail? Turn on Advanced mode at the top of the page.'),

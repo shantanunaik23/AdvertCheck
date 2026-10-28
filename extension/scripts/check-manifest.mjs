@@ -5,7 +5,7 @@
 import { readFile } from 'node:fs/promises';
 
 const expected = {
-  permissions: ['alarms', 'storage', 'webRequest'],
+  permissions: ['alarms', 'scripting', 'storage', 'webRequest'],
   host_permissions: ['<all_urls>'],
   absent: [
     'content_scripts',
@@ -34,6 +34,19 @@ for (const target of ['chrome-mv3', 'firefox-mv3']) {
     console.error(`${target}: ${problems.join('; ')}`);
   } else {
     console.log(`${target}: permissions and CSP match the reviewed set.`);
+  }
+}
+// The on-page feed (ADR 0005) must not signal the page or touch the network.
+for (const target of ['chrome-mv3', 'firefox-mv3']) {
+  const feed = await readFile(new URL(`../.output/${target}/feed.js`, import.meta.url), 'utf8');
+  const banned = ['postMessage', 'dispatchEvent', 'fetch(', 'XMLHttpRequest', 'WebSocket', 'innerHTML'].filter((s) =>
+    feed.includes(s),
+  );
+  if (banned.length) {
+    failed = true;
+    console.error(`${target}: feed.js uses ${banned.join(', ')}`);
+  } else {
+    console.log(`${target}: feed.js does not signal the page or use the network.`);
   }
 }
 process.exit(failed ? 1 : 0);
