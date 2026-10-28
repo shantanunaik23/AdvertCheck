@@ -2,7 +2,7 @@
 
 Records, on your own device, what websites tell advertisers about you, and shows it back. Plan: [`docs/extension/plan.md`](../docs/extension/plan.md). Decisions: [`docs/adr/`](../docs/adr/).
 
-Status: milestones 1 (foundations) and 2 (detection engine) done. Next: insights (3), then popup and dashboard (4).
+Status: milestones 1 (foundations), 2 (detection engine) and 3 (insights) done. Next: popup and dashboard (4).
 
 ## Build from source
 

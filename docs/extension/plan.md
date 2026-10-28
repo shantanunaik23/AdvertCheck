@@ -117,7 +117,7 @@ extension/
     store/                 db.ts (idb schema, queries), retention.ts, settings.ts
     insights/              interests.ts, patterns.ts
     ui/                    shared DOM helpers, tokens.css (from the website), components
-  data/                    trackers.json (generated), company-names.json, tracker-companies.json; topics.json, keywords.json (milestone 3)
+  data/                    trackers.json (generated), company-names.json, tracker-companies.json, topics.json (sites and keywords per topic)
   tests/
     unit/                  Vitest
     e2e/                   Playwright + local fake tracker server

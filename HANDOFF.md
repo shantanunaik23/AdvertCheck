@@ -24,8 +24,8 @@ The plan is in `docs/extension/plan.md`, with decisions in `docs/adr/`. In short
 - **Browsers:** Chrome, Edge and Firefox.
 
 Progress (28 October 2026):
-- **Done:** milestones 1 (foundations) and 2 (detection engine). Everything is verified by `npm run verify` in `extension/`.
-- **Next:** milestone 3 (interests and patterns), then 4 (popup and dashboard).
+- **Done:** milestones 1 (foundations), 2 (detection engine) and 3 (interests and patterns). Everything is verified by `npm run verify` in `extension/`.
+- **Next:** milestone 4 (popup and dashboard), then 5 (website page and store listings). Work is on the `redesign-and-extension` branch, pull request #1.
 
 ## Decisions made
 
