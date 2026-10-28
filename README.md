@@ -6,25 +6,32 @@ Ad Mirror is a single static page. It has no server, no cookies and no analytics
 
 ## What it does
 
+The page is laid out as: a **verdict** ("Advertisers can easily track this browser" / "partly protected" / "well protected"), a **privacy checkup** with fixes for the visitor's own browser, the **full list of details** any site can read, and **links to take control** of ad profiles at Google, Meta, Amazon, Microsoft and TikTok.
+
 **Automatically, on page load (nothing leaves the browser):**
 - Reads the details any site can see without asking: device, browser, screen, time zone, languages, privacy settings.
 - Builds a fingerprint ID from canvas rendering, graphics card and installed fonts, the same techniques trackers use to follow people who clear cookies.
-- Checks for an ad blocker with a local "bait" element.
+- Runs three checkup items:
+  - **Ad blocker**: a local "bait" element that blockers hide.
+  - **Fingerprint protection**: draws a solid colour on a canvas and reads it back. Brave, Firefox (resist fingerprinting) and Safari's advanced protection add noise, so the pixels no longer match.
+  - **"Do not sell my data" signal**: reads Global Privacy Control.
+- Shows step-by-step fixes for the visitor's browser (Chrome, Edge, Firefox, Safari, Brave, Samsung Internet, Opera; iPhone and Android variants). See `site/js/advice.js`.
 - Counts every request the page makes to other servers, so visitors can verify the "nothing leaves your browser" claim.
 
 **When the visitor chooses:**
 - **Ad and tracking servers check.** Tries to reach 12 well-known ad and tracking servers and reports which are blocked. A neutral control request runs first. If that also fails, the visitor is told the results are unreliable instead of being told they are protected.
-- **Real ad slot** (off by default). Shows an ad served by Google Ad Manager. Needs your own ad unit. See [Live ad slot](#live-ad-slot).
-- **Next steps.** Links to platform ad settings, data download pages and industry opt-outs.
-- **Report.** Copy a text summary or download JSON.
+- **Real ad slot** (off by default, hidden until configured). Shows an ad served by Google Ad Manager. Needs your own ad unit. See [Live ad slot](#live-ad-slot).
+- **Save results.** Copy a text summary or download a JSON data file.
+
+Design, writing and accessibility standards, plus the sources for every privacy fact and setting path, are in `.claude/skills/ad-mirror-design/SKILL.md`. Read it before changing the page.
 
 ## Run locally
 
 ```sh
 node scripts/serve.mjs        # http://127.0.0.1:8080, with the production security headers
 npm install                   # once, for the tests
-npx playwright install chromium
-npm test
+npx playwright install chromium firefox webkit
+npm test                      # SCREENSHOTS=some-dir npm test also saves screenshots
 ```
 
 ## Deploy to GitHub Pages
@@ -72,20 +79,25 @@ It shows ads from your own Ad Manager account and the exchanges connected to it,
 - Reachability is judged per server. Some blockers allow a server but block specific paths, so a server can show as reachable while the blocker still stops some of its ads.
 - The ad-blocker bait test can miss blockers that do not hide elements by class name.
 - The fingerprint ID shows how identifiable a browser is, not how unique. For uniqueness statistics, see EFF's [Cover Your Tracks](https://coveryourtracks.eff.org/), which compares against a database of visitors.
+- The fingerprint protection check only detects browsers that add noise to canvas reads. Firefox's Strict mode blocks known fingerprinting scripts without adding noise, so it can still show as "Not protected".
+- Browser detection for the fix steps uses the user agent and client hints. Less common browsers fall back to general advice.
 
 ## Project layout
 
 ```
 site/                 published to GitHub Pages
-  index.html
-  css/styles.css
+  index.html          page structure and the SVG icon set
+  favicon.svg
+  css/styles.css      design tokens (light and dark) and layout
   js/config.js        servers the page may contact, feature switches
-  js/signals.js       what the browser reveals
+  js/signals.js       what the browser reveals, browser detection, fingerprint protection test
+  js/advice.js        step-by-step fixes per browser
   js/probe.js         ad blocker and server checks
   js/adslot.js        optional live ad slot
   js/main.js          renders the page
   _headers            full security headers for Cloudflare Pages / Netlify
 scripts/build.mjs     generates the CSP from config
 scripts/serve.mjs     local server with production headers
-tests/page.test.mjs   browser tests (Playwright)
+tests/page.test.mjs   browser tests (Playwright: Chromium, Firefox, WebKit; axe accessibility)
+.claude/skills/       design standards and researched facts for this project
 ```

@@ -14,6 +14,19 @@ A tool that shows people how they are being marketed to through ads: what they a
 4. **Mobile app (later).** Phones do not let one app see another app's ads, so the app is a dashboard plus the export importer, optionally synced with the extension. Avoid accessibility-service or screen-reading approaches (store policy and privacy risk).
 5. **Optional home network device (idea).** Pi-hole style logging of ad-network contacts per device. Shows ad infrastructure exposure, not ad content.
 
+## Browser extension (in planning)
+
+The plan is in `docs/extension/plan.md`, with decisions in `docs/adr/`. In short:
+- **Records:** trackers on each page, what sites told ad companies, ad clicks, and searches.
+- **Shows:** interests and patterns, which are estimates.
+- **Runs:** fully on the device, by watching network traffic only.
+- **Built with:** WXT and TypeScript, reusing AdGuard companiesdb and Omnibug's patterns.
+- **Browsers:** Chrome, Edge and Firefox.
+
+Progress (28 October 2026):
+- **Done:** milestones 1 (foundations) and 2 (detection engine). Everything is verified by `npm run verify` in `extension/`.
+- **Next:** milestone 3 (interests and patterns), then 4 (popup and dashboard).
+
 ## Decisions made
 
 - **Hosting:** GitHub Pages first. GitHub Pages cannot send HTTP headers, so the CSP is a `<meta>` tag. `site/_headers` has the full header set for a later move to Cloudflare Pages or Netlify.
@@ -21,20 +34,24 @@ A tool that shows people how they are being marketed to through ads: what they a
 - **No web fonts, no third-party scripts, no storage, no analytics.** Any of these would leak visits to a third party.
 - **Every outside server is listed in `site/js/config.js`.** `scripts/build.mjs` generates the CSP from it, and CI fails if they drift.
 - **DOM is built with `textContent` only**, never `innerHTML`.
+- **Redesign (28 October 2026).** The page now leads with a verdict, then a privacy checkup where every failed check has fixes for the visitor's own browser, then the full details, then account links. It follows Material 3 style and is written for a reading age of about 9. The standards, the research behind them and the sources are in `.claude/skills/ad-mirror-design/SKILL.md`. Load that skill before changing the site.
+- **Unfinished features stay hidden.** The live ad slot card only appears when `adSlot` is configured. The extension is mentioned once in the footer's "Coming next".
+- **Recommended tools:** uBlock Origin Lite (all major browsers), uBlock Origin (Firefox) and Privacy Badger (to send the do-not-sell signal). All are free, open source and not commercial. Re-check that the advice in `site/js/advice.js` is still current about every six months.
 
 ## Not yet verified
 
-The original build environment had no internet access, so these were not tested for real:
-
 - The server check against the real ad servers (tested only with simulated blocked, reachable and offline responses).
-- The external links on the page (ad settings, data downloads, opt-outs).
-- The GitHub Actions workflow (`.github/workflows/pages.yml`) has not run yet.
+- The fingerprint protection check on real Brave, Safari 26 and Firefox Strict. It was tested in Playwright's Chromium, Firefox and WebKit builds, which don't scramble canvas reads by default.
+- The per-browser fix steps were written from research, not by clicking through each browser. Check them on real devices, especially iPhone and Android.
+- The GitHub Actions workflow (`.github/workflows/pages.yml`) has not run yet. It now installs Chromium, Firefox and WebKit.
 - The live ad slot (`site/js/adslot.js`) is off by default and has never been tested. It needs a Google Ad Manager ad unit.
+
+External links were checked on 28 October 2026 and all respond. Google and Meta pages need you to be signed in.
 
 ## Next steps
 
 1. Enable GitHub Pages: repo **Settings → Pages → Source: GitHub Actions**, then check the first workflow run passes.
-2. Open the live site in a normal browser and in one with an ad blocker. Run the server check in both and confirm the results make sense.
-3. Click through every external link and fix any that have moved.
-4. Choose a licence (for example MIT) if the project should be open source.
+2. Open the site on real devices (Chrome, Safari on iPhone, Firefox, Brave), with and without an ad blocker. Run the server check and follow a few fix steps to confirm they match what each browser shows.
+3. Choose a licence (for example MIT) if the project should be open source.
+4. Add a social share image (`og:image`) and a custom domain if wanted.
 5. Build the data export importer (step 2 of the plan). Research the current export formats for each platform first, since they change.

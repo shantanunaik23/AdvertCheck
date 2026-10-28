@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const siteDir = fileURLToPath(new URL('../site', import.meta.url));
 const port = Number(process.argv[2]) || 8080;
-const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json' };
+const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml' };
 
 async function headers() {
   const text = await readFile(join(siteDir, '_headers'), 'utf8');
