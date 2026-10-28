@@ -2,7 +2,9 @@
 
 Records, on your own device, what websites tell advertisers about you, and shows it back. Plan: [`docs/extension/plan.md`](../docs/extension/plan.md). Decisions: [`docs/adr/`](../docs/adr/).
 
-Status: milestones 1 (foundations), 2 (detection engine) and 3 (insights) done. Next: popup and dashboard (4).
+Status: milestones 1–4 done (foundations, detection, insights, interface). Next: website page and store listings (5).
+
+Try it: `npm run build`, then load `.output/chrome-mv3` as an unpacked extension (chrome://extensions → Developer mode → Load unpacked), or run `npm run dev`.
 
 ## Build from source
 
@@ -34,7 +36,7 @@ npm run dev:firefox     # Firefox with live reload
 | `npm test`               | Unit tests (Vitest with a fake browser API)                                              |
 | `npm run check:manifest` | Built manifests ask only for the reviewed permissions, and the CSP blocks network access |
 | `npm run lint:firefox`   | Mozilla's add-on linter, warnings count as errors                                        |
-| `npm run test:e2e`       | The built extension loaded in Chromium (Playwright)                                      |
+| `npm run test:e2e`       | The built extension in Chromium: detection, every page with axe accessibility checks     |
 | `npm run verify`         | All of the above, in order                                                               |
 
 For end-to-end tests, install the browser once: `npx playwright install chromium`.

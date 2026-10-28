@@ -50,10 +50,10 @@ for (const [domain, trackerId] of Object.entries(trackerDomains).sort(([a], [b])
   domains[domain] = [companyId, category];
 }
 
-const out = {
-  source: `AdGuard companiesdb ${COMMIT} (CC BY-SA 4.0), built on WhoTracks.me data. Filtered; see THIRD_PARTY_NOTICES.md.`,
-  companies: Object.fromEntries(Object.entries(usedCompanies).sort(([a], [b]) => a.localeCompare(b))),
-  domains,
-};
-await writeFile(new URL('../data/trackers.json', import.meta.url), JSON.stringify(out) + '\n');
+const source = `AdGuard companiesdb ${COMMIT} (CC BY-SA 4.0), built on WhoTracks.me data. Filtered; see THIRD_PARTY_NOTICES.md.`;
+// Names are kept apart from domains so extension pages can show names without loading the whole list.
+const names = Object.fromEntries(Object.entries(usedCompanies).sort(([a], [b]) => a.localeCompare(b)));
+const write = (file, data) => writeFile(new URL(`../data/${file}`, import.meta.url), `${JSON.stringify(data)}\n`);
+await write('trackers.json', { source, domains });
+await write('companies.json', { source, companies: names });
 console.log(`${Object.keys(domains).length} domains, ${Object.keys(usedCompanies).length} companies`);

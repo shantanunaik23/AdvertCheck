@@ -19,6 +19,7 @@
   ],
   "license": "MIT",
   "overrides": {
-    "shell-quote": "1.12.0"
+    "shell-quote": "1.12.0",
+    "playwright-core": "1.63.0"
   }
 }

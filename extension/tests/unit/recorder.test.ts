@@ -116,7 +116,7 @@ describe('Recorder', () => {
   });
 
   it('restores tab state so a restarted worker does not double count', () => {
-    recorder.restore({ [TAB]: { site: 'shop.example', companies: ['meta'], reported: [] } });
+    recorder.restore({ [TAB]: { site: 'shop.example', startedAt: 0, companies: ['meta'], reported: [] } });
     load('https://connect.facebook.net/x.js');
     expect(recorded).toEqual([]);
   });

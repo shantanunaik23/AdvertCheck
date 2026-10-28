@@ -2,14 +2,13 @@
 // Firefox. Listeners are registered synchronously at the top level so the
 // browser can wake the worker for them; state lives in storage, not globals.
 
-import { storage } from '#imports';
-import { Recorder, type PageState } from '../src/recorder';
+import { Recorder } from '../src/recorder';
 import { bodyFor } from '../src/requestBody';
 import { addEvents, deleteBefore } from '../src/store/db';
 import { DEFAULT_SETTINGS, settingsItem, type Settings } from '../src/store/settings';
+import { tabsItem } from '../src/store/tabs';
 import type { AdEvent } from '../src/types';
 
-const tabsItem = storage.defineItem<Record<number, PageState>>('session:tabs', { fallback: {} });
 const PURGE_ALARM = 'purge';
 const FLUSH_MS = 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;

@@ -114,7 +114,7 @@ export function computeInterests(events: readonly AdEvent[]): Interest[] {
     out.push({
       ...topic,
       score: a.score,
-      strength: a.score >= 20 ? 'strong' : a.score >= 8 ? 'medium' : 'light',
+      strength: a.score >= 30 ? 'strong' : a.score >= 10 ? 'medium' : 'light',
       evidence: a.evidence,
       examples: a.examples,
     });

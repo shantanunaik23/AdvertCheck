@@ -1,0 +1,67 @@
+body {
+  width: 360px;
+  min-height: 200px;
+}
+.popup {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+.popup-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.page-site {
+  font-size: 1.25rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.page-count {
+  color: var(--ink-2);
+}
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px 10px 14px;
+  border-radius: var(--r-sm);
+  background: var(--warn-container);
+  color: var(--on-warn-container);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+.company-told {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.company-name {
+  font-weight: 600;
+}
+.popup-foot {
+  display: grid;
+  gap: 8px;
+}
+.popup-foot .btn {
+  width: 100%;
+}
+.private-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--ink-2);
+}
+.private-note .icon {
+  width: 14px;
+  height: 14px;
+}
+.rows {
+  max-height: 300px;
+  overflow-y: auto;
+}

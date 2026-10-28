@@ -3,7 +3,8 @@ import { findClickId } from '../../src/classify/clickIds';
 import { decodePixel, toAction } from '../../src/classify/pixels';
 import { findSearch } from '../../src/classify/search';
 import { isThirdParty, siteOf } from '../../src/classify/site';
-import { companyName, lookupTracker } from '../../src/classify/trackers';
+import { companyName } from '../../src/classify/companies';
+import { lookupTracker } from '../../src/classify/trackers';
 
 describe('site', () => {
   it('uses the registrable domain, including multi-part suffixes', () => {

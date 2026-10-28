@@ -12,6 +12,8 @@ import type { AdEvent, RequestInfo } from './types';
 /** What has been seen on the current page of a tab, to avoid duplicate records. */
 export interface PageState {
   site: string;
+  /** When this page load began, so the popup can show just this visit. */
+  startedAt: number;
   /** Companies that saw this page load. */
   companies: string[];
   /** Keys of reported events already recorded for this page load. */
@@ -61,7 +63,7 @@ export class Recorder {
     let page = this.tabs.get(tabId);
     if (!page && fallbackPageUrl && isWebPage(fallbackPageUrl)) {
       const site = siteOf(fallbackPageUrl);
-      if (site) this.tabs.set(tabId, (page = { site, companies: [], reported: [] }));
+      if (site) this.tabs.set(tabId, (page = { site, startedAt: this.deps.now(), companies: [], reported: [] }));
     }
     if (!page || settings.excludedSites.includes(page.site)) return;
 
@@ -107,7 +109,7 @@ export class Recorder {
       this.deps.onCompanies(tabId, 0);
       return;
     }
-    this.tabs.set(tabId, { site, companies: [], reported: [] });
+    this.tabs.set(tabId, { site, startedAt: this.deps.now(), companies: [], reported: [] });
     this.deps.onCompanies(tabId, 0);
     this.changed();
     if (settings.excludedSites.includes(site)) return;
