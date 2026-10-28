@@ -68,6 +68,8 @@ jobs:
         with:
           name: extension-zips
           path: extension/.output/*.zip
+          # WXT builds into .output, which upload-artifact skips by default.
+          include-hidden-files: true
           if-no-files-found: error
 
   deploy:
