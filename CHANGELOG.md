@@ -5,6 +5,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 ## [Unreleased]
 
 ### Added
+- "This ad followed you": when an ad brings you to a site where you looked at or basketed something in the last 30 days, an alert and a dashboard card say so (retargeting), e.g. "You added “Linen shirt” to your basket on asos.com 3 days ago".
+- Optional "Sleep on it" reminders on basket and checkout alerts.
 - Shopping alerts: when a site tells an ad company you looked at a product, added it to your basket, saved it, checked out, bought it or searched, or hands over your email, a small alert says who now knows and why it matters. Everything else waits behind a counter button.
 - "How this gets you to spend" explainer on the dashboard and website, including the FTC 2025 surveillance pricing findings.
 

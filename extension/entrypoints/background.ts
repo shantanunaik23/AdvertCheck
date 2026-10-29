@@ -2,10 +2,18 @@
 // Firefox. Listeners are registered synchronously at the top level so the
 // browser can wake the worker for them; state lives in storage, not globals.
 
-import { applyToFeed, type FeedItem, type FeedMessage } from '../src/feed';
+import {
+  applyToFeed,
+  followedNote,
+  type FeedItem,
+  type FeedMessage,
+  type FeedPayload,
+  type Highlight,
+} from '../src/feed';
+import { findFollowed, LOOKBACK_MS } from '../src/insights/followed';
 import { Recorder } from '../src/recorder';
 import { bodyFor } from '../src/requestBody';
-import { addEvents, deleteBefore } from '../src/store/db';
+import { addEvents, deleteBefore, eventsSince } from '../src/store/db';
 import { DEFAULT_SETTINGS, settingsItem, type Settings } from '../src/store/settings';
 import { tabsItem } from '../src/store/tabs';
 import type { AdEvent } from '../src/types';
@@ -39,7 +47,31 @@ export default defineBackground(() => {
   let flushTimer: ReturnType<typeof setTimeout> | undefined;
   let saveTabsTimer: ReturnType<typeof setTimeout> | undefined;
   // The feed for each tab's current page, kept in memory only.
-  const feeds = new Map<number, FeedItem[]>();
+  const feeds = new Map<number, { items: FeedItem[]; notes: Highlight[] }>();
+  const payload = (tabId: number): FeedPayload => ({
+    items: feeds.get(tabId)?.items ?? [],
+    notes: feeds.get(tabId)?.notes ?? [],
+    sleepOnIt: settings.sleepOnIt,
+  });
+  const sendFeed = (tabId: number) => {
+    if (!settings.showAlerts) return;
+    const message: FeedMessage = { type: 'they-spy/feed', feed: payload(tabId) };
+    // Fails harmlessly when the page has no feed script (yet).
+    void browser.tabs.sendMessage(tabId, message).catch(() => undefined);
+  };
+
+  // An ad click may have followed the user from an earlier visit (retargeting).
+  const checkFollowed = async (tabId: number, events: AdEvent[]) => {
+    for (const click of events) {
+      if (click.kind !== 'ad_click') continue;
+      const history = [...(await eventsSince(click.ts - LOOKBACK_MS)), ...queue];
+      const followed = findFollowed(click, history);
+      const feed = feeds.get(tabId);
+      if (!followed || !feed) continue;
+      feed.notes.push(followedNote(followed));
+      sendFeed(tabId);
+    }
+  };
 
   const flush = async () => {
     flushTimer = undefined;
@@ -54,13 +86,10 @@ export default defineBackground(() => {
     record: (events, tabId) => {
       queue.push(...events);
       flushTimer ??= setTimeout(() => void flush(), FLUSH_MS);
-      const items = applyToFeed(feeds.get(tabId) ?? [], events);
-      feeds.set(tabId, items);
-      if (settings.showAlerts) {
-        const message: FeedMessage = { type: 'they-spy/feed', items };
-        // Fails harmlessly when the page has no feed script (yet).
-        void browser.tabs.sendMessage(tabId, message).catch(() => undefined);
-      }
+      const feed = feeds.get(tabId) ?? { items: [], notes: [] };
+      feeds.set(tabId, { ...feed, items: applyToFeed(feed.items, events) });
+      sendFeed(tabId);
+      if (events.some((e) => e.kind === 'ad_click')) void checkFollowed(tabId, events);
     },
     onCompanies: (tabId, count) => {
       if (count === 0) feeds.delete(tabId);
@@ -90,7 +119,7 @@ export default defineBackground(() => {
     const tabId = sender.tab?.id;
     if (tabId === undefined || sender.frameId !== 0) return false;
     void ready.then(() => {
-      sendResponse(settings.showAlerts ? (feeds.get(tabId) ?? []) : null);
+      sendResponse(settings.showAlerts ? payload(tabId) : null);
     });
     // Keep the channel open for the asynchronous answer (works in every browser).
     return true;

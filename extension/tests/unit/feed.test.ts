@@ -43,6 +43,9 @@ describe('on-page feed', () => {
       ['email', 'This site just gave Facebook your email address'],
     ]);
     expect(feed[0]?.highlights[0]?.why).toMatch(/basket/);
+    // Basket and checkout moments can carry the optional "Sleep on it" nudge.
+    expect(feed[0]?.highlights[0]?.nudge).toBe(true);
+    expect(feed[0]?.highlights[1]?.nudge).toBeUndefined();
     expect(feed[1]?.highlights).toEqual([]);
   });
 

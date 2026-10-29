@@ -1,13 +1,14 @@
 import type { BrowserContext } from '@playwright/test';
 import { test, expect } from './fixtures';
-import { axeViolations, serveFakeWeb } from './helpers';
+import { axeViolations, backgroundWorker, seedEvents, serveFakeWeb } from './helpers';
 
-async function setAlerts(context: BrowserContext, extensionId: string, on: boolean) {
+async function setAlerts(context: BrowserContext, extensionId: string, on: boolean, sleepOnIt = false) {
   const page = await context.newPage();
   await page.goto(`chrome-extension://${extensionId}/dashboard.html`);
   const toggle = page.getByRole('switch', { name: 'Show alerts on websites' });
   if (on) await toggle.check();
   else await toggle.uncheck();
+  if (on && sleepOnIt) await page.getByRole('switch', { name: '“Sleep on it” reminders' }).check();
   // The background registers or removes the page script when the setting changes.
   await page.waitForTimeout(500);
   await page.close();
@@ -63,4 +64,44 @@ test('shopping moments pop up with why they matter; the rest waits behind a butt
   await shop.reload();
   await shop.waitForTimeout(1500);
   await expect(shop.locator('they-spy-feed')).toHaveCount(0);
+});
+
+test('an ad click is linked to what you looked at earlier, and "Sleep on it" is optional', async ({
+  context,
+  extensionId,
+}) => {
+  await serveFakeWeb(context);
+  // Two days ago, the shop told Facebook you looked at a lamp.
+  await seedEvents(backgroundWorker(context), [
+    {
+      kind: 'reported',
+      ts: Date.now() - 2 * 24 * 60 * 60 * 1000,
+      site: 'shop.example',
+      companyId: 'meta',
+      platform: 'Meta Pixel',
+      eventName: 'ViewContent',
+      action: 'view_item',
+      item: 'Brass desk lamp',
+      identityShared: false,
+    },
+  ]);
+  await setAlerts(context, extensionId, true);
+
+  const shop = await context.newPage();
+  await shop.goto('https://shop.example/lamp?gclid=retargeted');
+  const feed = shop.locator('they-spy-feed');
+  const followed = feed.getByRole('group', { name: 'This Google Ads ad probably followed you here' });
+  await expect(followed).toBeVisible();
+  await expect(followed).toContainText('You looked at “Brass desk lamp” on shop.example 2 days ago.');
+
+  // No nudge unless asked for…
+  const basket = feed.getByRole('group', { name: /added “Desk Lamp” to your basket/ });
+  await expect(basket).toBeVisible();
+  await expect(basket).not.toContainText('Sleep on it?');
+
+  // …and there when switched on.
+  await setAlerts(context, extensionId, true, true);
+  await shop.goto('https://shop.example/lamp');
+  await expect(feed.getByRole('group', { name: /added “Desk Lamp” to your basket/ })).toContainText('Sleep on it?');
+  expect(await axeViolations(shop, 'they-spy-feed')).toEqual([]);
 });

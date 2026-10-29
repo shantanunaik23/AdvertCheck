@@ -8,7 +8,7 @@
 // Shopping moments (and a site giving away your email) pop up as alerts with
 // a line on why they matter. Everything else waits behind a small button.
 
-import type { FeedItem, FeedMessage, Highlight } from '../src/feed';
+import type { FeedItem, FeedMessage, FeedPayload, Highlight } from '../src/feed';
 
 const STYLES = `
 :host { all: initial; }
@@ -39,6 +39,8 @@ button:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
   animation: slide 220ms ease-out;
 }
 .toast.email { border-left-color: var(--accent-bad); }
+.toast.followed { border-left-color: var(--primary); }
+.toast-nudge { grid-column: 1; margin-top: 6px; padding: 8px 10px; border-radius: 10px; background: var(--chip); font-weight: 600; }
 @keyframes slide { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
 .toast-title { font-weight: 700; font-size: 15px; }
 .toast-why { grid-column: 1; color: var(--ink-2); }
@@ -82,7 +84,10 @@ button:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
 
 /** How long an alert stays up, unless the pointer or keyboard focus is on it. */
 const TOAST_MS = 12_000;
-const MAX_TOASTS = 2;
+const MAX_TOASTS = 3;
+/** Which alerts matter most when several arrive at once: an ad that followed
+ * you, then your email, then being close to paying, then the rest. */
+const rank = (h: Highlight) => (h.kind === 'followed' ? 0 : h.kind === 'email' ? 1 : h.nudge ? 2 : 3);
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', text?: string): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag);
@@ -110,9 +115,27 @@ function namesOf(items: FeedItem[]): string {
 
 const watching = (n: number) => `${String(n)} ${n === 1 ? 'ad company is' : 'ad companies are'} watching this page`;
 
+/** Shown under basket and checkout alerts when the user has switched it on. */
+const SLEEP_ON_IT =
+  'Sleep on it? These ads are built to hurry you. If you still want it tomorrow, you’ll know it’s you deciding, not the ads.';
+
+const isText = (s: unknown) => typeof s === 'string';
+const isHighlight = (h: Partial<Highlight>) => isText(h.id) && isText(h.title) && isText(h.why);
+
 // Messages come from our own background script, but check their shape anyway.
+function isPayload(value: unknown): value is FeedPayload {
+  const p = value as Partial<FeedPayload> | null;
+  return (
+    typeof p === 'object' &&
+    p !== null &&
+    typeof p.sleepOnIt === 'boolean' &&
+    Array.isArray(p.notes) &&
+    p.notes.every(isHighlight) &&
+    isItems(p.items)
+  );
+}
+
 function isItems(value: unknown): value is FeedItem[] {
-  const isText = (s: unknown) => typeof s === 'string';
   return (
     Array.isArray(value) &&
     value.every((i: unknown) => {
@@ -124,7 +147,7 @@ function isItems(value: unknown): value is FeedItem[] {
         Array.isArray(item.sent) &&
         item.sent.every(isText) &&
         Array.isArray(item.highlights) &&
-        item.highlights.every((h: Partial<Highlight>) => isText(h.id) && isText(h.title) && isText(h.why))
+        item.highlights.every(isHighlight)
       );
     })
   );
@@ -154,6 +177,7 @@ export default defineUnlistedScript({
     shadow.append(root);
 
     let items: FeedItem[] = [];
+    let sleepOnIt = false;
     let open = false;
     let closed = false;
     const shown = new Set<string>();
@@ -236,7 +260,7 @@ export default defineUnlistedScript({
     };
 
     const showToast = (h: Highlight) => {
-      const toast = el('div', h.kind === 'email' ? 'toast email' : 'toast');
+      const toast = el('div', `toast ${h.kind}`);
       toast.setAttribute('role', 'group');
       toast.setAttribute('aria-label', h.title);
       const remove = () => {
@@ -266,6 +290,7 @@ export default defineUnlistedScript({
         el('p', 'toast-title', h.title),
         iconButton('×', 'Dismiss', remove),
         el('p', 'toast-why', h.why),
+        ...(h.nudge && sleepOnIt ? [el('p', 'toast-nudge', SLEEP_ON_IT)] : []),
         more,
       );
       toasts.append(toast);
@@ -274,18 +299,20 @@ export default defineUnlistedScript({
     };
 
     const update = (next: unknown) => {
-      if (!isItems(next)) return;
-      items = next;
-      // Pop up shopping moments not seen yet on this page, newest last.
-      const fresh = items.flatMap((i) => i.highlights).filter((h) => !shown.has(h.id));
+      if (!isPayload(next)) return;
+      items = next.items;
+      sleepOnIt = next.sleepOnIt;
+      // Pop up moments not seen yet on this page, newest last.
+      const fresh = [...next.notes, ...items.flatMap((i) => i.highlights)].filter((h) => !shown.has(h.id));
       for (const h of fresh) shown.add(h.id);
-      if (!closed) for (const h of fresh.slice(-MAX_TOASTS)) showToast(h);
+      const top = [...fresh].sort((a, b) => rank(a) - rank(b)).slice(0, MAX_TOASTS);
+      if (!closed) for (const h of top) showToast(h);
       render();
     };
 
     browser.runtime.onMessage.addListener((message: FeedMessage, sender) => {
       if (sender.id !== browser.runtime.id || message.type !== 'they-spy/feed') return undefined;
-      update(message.items);
+      update(message.feed);
       return undefined;
     });
 

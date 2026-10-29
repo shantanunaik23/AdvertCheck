@@ -2,6 +2,7 @@
 // in plain words. Built in the background script; the content script only
 // renders it.
 
+import { whenAgo, type Followed } from './insights/followed';
 import { toldPhrase } from './ui/format';
 import { who } from './ui/who';
 import type { Action, AdEvent } from './types';
@@ -11,7 +12,7 @@ export const BASIC_DATA = ['Which website you are on', 'Your rough location', 'Y
 
 export const EMAIL_TEXT = 'Your email address (scrambled)';
 
-/** A big moment worth popping up an alert for: shopping, or giving away your email. */
+/** A big moment worth popping up an alert for: shopping, giving away your email, or an ad that followed you. */
 export interface Highlight {
   /** Stable key, so the page shows each alert once. */
   id: string;
@@ -19,7 +20,9 @@ export interface Highlight {
   title: string;
   /** Why it matters, in one plain sentence. */
   why: string;
-  kind: 'shopping' | 'email';
+  kind: 'shopping' | 'email' | 'followed';
+  /** A moment close to paying (basket, checkout), where the optional "Sleep on it" nudge applies. */
+  nudge?: boolean;
 }
 
 export interface FeedItem {
@@ -86,6 +89,7 @@ export function applyToFeed(items: readonly FeedItem[], events: readonly AdEvent
             title: `${item.who} now knows you ${phrase}`,
             why,
             kind: 'shopping',
+            ...((e.action === 'add_to_cart' || e.action === 'checkout') && { nudge: true }),
           });
         }
       }
@@ -106,5 +110,24 @@ export function applyToFeed(items: readonly FeedItem[], events: readonly AdEvent
   return [...map.values()].sort((a, b) => b.updated - a.updated);
 }
 
+/** An ad click that probably came from an earlier visit, as an on-page note. */
+export function followedNote(f: Followed): Highlight {
+  return {
+    id: `followed|${String(f.click.ts)}`,
+    title: `This ${f.click.platform} ${f.click.certain ? 'ad' : 'link'} probably followed you here`,
+    why: `You ${toldPhrase(f.earlier)} on ${f.earlier.site} ${whenAgo(f.daysAgo)}. Ad companies use that to keep showing it to you until you come back. That’s called retargeting.`,
+    kind: 'followed',
+  };
+}
+
+/** Everything the page script needs to draw its alerts. */
+export interface FeedPayload {
+  items: FeedItem[];
+  /** Alerts about the visit itself, such as an ad that followed you. */
+  notes: Highlight[];
+  /** The user wants a "Sleep on it" nudge on basket and checkout alerts. */
+  sleepOnIt: boolean;
+}
+
 /** Messages between the background script and the feed content script. */
-export type FeedMessage = { type: 'they-spy/feed'; items: FeedItem[] } | { type: 'they-spy/feed-hello' };
+export type FeedMessage = { type: 'they-spy/feed'; feed: FeedPayload } | { type: 'they-spy/feed-hello' };

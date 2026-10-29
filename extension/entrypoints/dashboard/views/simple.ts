@@ -1,7 +1,8 @@
 // The simple view: a handful of plain answers for anyone, whatever their
 // confidence with technology. Everything else is in Advanced mode.
 
-import { weekSummary } from '../../../src/insights/simple';
+import { followedSince, whenAgo } from '../../../src/insights/followed';
+import { WEEK_MS, weekSummary } from '../../../src/insights/simple';
 import { who, whoList } from '../../../src/ui/who';
 import { settingsItem } from '../../../src/store/settings';
 import { el, icon, plural } from '../../../src/ui/dom';
@@ -106,6 +107,42 @@ export const simple: View = (ctx) => {
           : el('p', { class: 'muted' }, 'No shops passed on what you did this week. Nice.'),
       ),
     );
+
+    const followed = followedSince(ctx.events, Date.now() - WEEK_MS);
+    if (followed.length) {
+      nodes.push(
+        el(
+          'section',
+          { class: 'card answer' },
+          el('h2', {}, 'Ads that followed you'),
+          el(
+            'ul',
+            { class: 'told-list' },
+            ...followed
+              .slice(0, 5)
+              .map((f) =>
+                el(
+                  'li',
+                  {},
+                  icon('click'),
+                  el(
+                    'span',
+                    {},
+                    `A ${f.click.platform} ${f.click.certain ? 'ad' : 'link'} brought you back to `,
+                    el('strong', {}, f.click.site),
+                    `. You ${toldPhrase(f.earlier)} there ${whenAgo(f.daysAgo)}.`,
+                  ),
+                ),
+              ),
+          ),
+          el(
+            'p',
+            { class: 'small muted' },
+            'That’s retargeting: ad companies keep showing you what you looked at until you go back and buy.',
+          ),
+        ),
+      );
+    }
 
     nodes.push(
       el(

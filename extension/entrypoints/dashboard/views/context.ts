@@ -1,6 +1,6 @@
 import { deleteAll, type StoredEvent } from '../../../src/store/db';
 import { settingsItem, type Settings } from '../../../src/store/settings';
-import { ALERTS_TEXT, ALERTS_TITLE } from '../../../src/ui/alerts';
+import { ALERTS_TEXT, ALERTS_TITLE, SLEEP_TEXT, SLEEP_TITLE } from '../../../src/ui/alerts';
 import { el, icon, type IconName } from '../../../src/ui/dom';
 
 export interface Ctx {
@@ -62,15 +62,24 @@ export function deleteControls(ctx: Ctx): { button: HTMLButtonElement; confirmRo
 
 /** The "Show alerts on websites" switch, shared by the simple and advanced views. */
 export function alertsSwitch(ctx: Ctx, id = 'alerts'): HTMLElement {
-  const input = el('input', { type: 'checkbox', role: 'switch', id, 'aria-describedby': `${id}-text` });
-  input.checked = ctx.settings.showAlerts;
-  input.addEventListener('change', () => {
-    void settingsItem.setValue({ ...ctx.settings, showAlerts: input.checked }).then(ctx.refresh);
-  });
+  const toggle = (key: 'showAlerts' | 'sleepOnIt', inputId: string, title: string, text: string) => {
+    const input = el('input', { type: 'checkbox', role: 'switch', id: inputId, 'aria-describedby': `${inputId}-text` });
+    input.checked = ctx.settings[key];
+    input.addEventListener('change', () => {
+      void settingsItem.setValue({ ...ctx.settings, [key]: input.checked }).then(ctx.refresh);
+    });
+    return el(
+      'div',
+      { class: 'setting' },
+      el('label', { class: 'switch', for: inputId }, el('span', { class: 'setting-title' }, title), input),
+      el('p', { class: 'small muted', id: `${inputId}-text` }, text),
+    );
+  };
   return el(
     'div',
-    { class: 'setting' },
-    el('label', { class: 'switch', for: id }, el('span', { class: 'setting-title' }, ALERTS_TITLE), input),
-    el('p', { class: 'small muted', id: `${id}-text` }, ALERTS_TEXT),
+    {},
+    toggle('showAlerts', id, ALERTS_TITLE, ALERTS_TEXT),
+    // Only meaningful with alerts on: it adds a line to basket and checkout alerts.
+    ctx.settings.showAlerts ? toggle('sleepOnIt', `${id}-sleep`, SLEEP_TITLE, SLEEP_TEXT) : null,
   );
 }
