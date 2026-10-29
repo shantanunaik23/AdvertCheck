@@ -9,9 +9,6 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - Optional "Sleep on it" reminders on basket and checkout alerts.
 - Shopping alerts: when a site tells an ad company you looked at a product, added it to your basket, saved it, checked out, bought it or searched, or hands over your email, a small alert says who now knows and why it matters. Everything else waits behind a counter button.
 - "How this gets you to spend" explainer on the dashboard and website, including the FTC 2025 surveillance pricing findings.
-
-### Changed
-- Renamed to They Spy. Friendlier, more direct wording throughout.
 - Optional on-page alert feed (ADR 0005): when switched on, a small panel on each website says which companies got data from the page and what they were told, in plain words. Off by default; its script is only placed in pages while it is on, never reads the page, and does not signal the page.
 - Simple view as the default for the extension, with an Advanced mode for full detail.
 - Extension interface: toolbar popup (companies that saw the current page and what they were told), dashboard (overview, companies, timeline, interests, patterns, settings with pause, search-word switch, retention, site exclusions, export and delete), and a first-run welcome page explaining what is and is not recorded and the install warning. Light and dark themes; accessibility checked with axe on every page.
@@ -22,5 +19,6 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - CI runs website and extension checks; actions pinned to commit SHAs; Dependabot with a 14-day cooldown.
 
 ### Changed
+- Renamed to They Spy. Friendlier, more direct wording throughout.
 - Website redesign: verdict first, privacy checkup with fixes for the visitor's browser, plain-language details, account links, FAQ.
 - Website tests run in Chromium, Firefox and WebKit, with axe accessibility checks.

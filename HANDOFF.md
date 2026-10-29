@@ -1,57 +1,69 @@
 # Handoff notes
 
-Context for anyone (including a new Claude chat) picking up this project. Read README.md first for what the code does and how to run it.
+Context for anyone (including a new Claude chat) picking up this project. Read README.md first for what the code does and how to run it, then `extension/README.md` for the extension.
+
+- **Repo:** https://github.com/shantanunaik23/AdvertCheck (work is on `main`; PR #1 was merged on 29 October 2026)
+- **Website:** https://shantanunaik23.github.io/AdvertCheck/ (deployed by CI on every push to `main`)
+- **Name:** They Spy (the repo is still called AdvertCheck)
 
 ## The goal
 
-A tool that shows people how they are being marketed to through ads: what they are shown, what they engage with, and how susceptible they are. It should be easy to understand, simple to use and secure. The owner gives the direction; the builder is responsible for research and doing it properly.
+A tool that shows people how they are being tracked and marketed to, and teaches them that tracking is built to get them to buy more and change their behaviour. Easy for anyone to understand, whatever their IT skills, simple to use and secure. Nothing ever leaves the user's device. The owner gives the direction; the builder is responsible for research and doing it properly.
 
-## The overall plan
+## Where things stand (29 October 2026)
 
-1. **Website (built, this repo).** A front door that gives instant value with no install. Shows what any site can see about the visitor, and whether ad networks can reach their browser. Points to the deeper options.
-2. **Data export importer (next).** Visitors drop their Google, Meta or TikTok data export onto the page and it is parsed locally in the browser, never uploaded. Shows inferred interests and advertisers holding their data.
-3. **Browser extension (later).** Records ads seen and clicked over time, stored only on the device. Adds a "susceptibility" view: which categories and times of day the user engages with ads most. Frame it as a mirror of their own patterns, labelled as an estimate, never as a psychological score.
-4. **Mobile app (later).** Phones do not let one app see another app's ads, so the app is a dashboard plus the export importer, optionally synced with the extension. Avoid accessibility-service or screen-reading approaches (store policy and privacy risk).
-5. **Optional home network device (idea).** Pi-hole style logging of ad-network contacts per device. Shows ad infrastructure exposure, not ad content.
+**Website (`site/`) — built and live.** Verdict first, then a privacy checkup with fixes for the visitor's own browser, plain-language details, account links and a FAQ (including "How does tracking get me to buy more?"). Casual but truthful tone. Load the `they-spy-design` skill (`.claude/skills/they-spy-design/SKILL.md`) before changing anything in `site/` or writing claims about tracking: it holds the standards, the voice and the sourced facts.
 
-## Browser extension (in planning)
+**Browser extension (`extension/`) — built, not yet published.** For Chrome, Edge and Firefox. Plan in `docs/extension/plan.md`, decisions in `docs/adr/0001`–`0005`. It:
+- watches network traffic only (never reads pages) and stores everything in IndexedDB on the device; its CSP blocks all network access;
+- records trackers per page, what sites told ad companies (viewed a product, added to basket, checkout, email handed over…), ad clicks and searches;
+- shows a simple view by default ("Your week in ads"), with an Advanced mode for full detail, interests and patterns;
+- optional on-page alerts (ADR 0005, off by default): a small overlay says who just learned what, focused on shopping moments;
+- "This ad followed you": links an ad click to something viewed or basketed on that site in the last 30 days (retargeting);
+- optional "Sleep on it" line on basket and checkout alerts.
 
-The plan is in `docs/extension/plan.md`, with decisions in `docs/adr/`. In short:
-- **Records:** trackers on each page, what sites told ad companies, ad clicks, and searches.
-- **Shows:** interests and patterns, which are estimates.
-- **Runs:** fully on the device, by watching network traffic only.
-- **Built with:** WXT and TypeScript, reusing AdGuard companiesdb and Omnibug's patterns.
-- **Browsers:** Chrome, Edge and Firefox.
+Milestones 1–4 of the plan are done. Milestone 5 (website page and store release) is next.
 
-Progress (28 October 2026):
-- **Done:** milestones 1 (foundations), 2 (detection engine), 3 (interests and patterns) and 4 (popup, dashboard and welcome page), plus a simple default view with an Advanced mode, and an optional on-page alert feed (ADR 0005). Everything is verified by `npm run verify` in `extension/`.
-- **Next:** milestone 5 (extension page on the website, privacy policy, store listings), then real-device testing. Work is on the `redesign-and-extension` branch, pull request #1.
+## How to work on it
+
+- Node.js is installed at `C:\Program Files\nodejs`, but VS Code may need a full restart before `node`/`npm` are on PATH.
+- Website: `npm test` in the repo root (Playwright in Chromium, Firefox and WebKit, plus axe accessibility checks).
+- Extension: `npm run verify` in `extension/` runs typecheck, lint, 55 unit tests, build, manifest check, Firefox lint and 9 end-to-end tests. All passed on 29 October 2026.
+- Try the extension: `npm run build` in `extension/`, then load `extension/.output/chrome-mv3` as an unpacked extension (`chrome://extensions`, Developer mode).
+- CI (`.github/workflows/pages.yml`) runs both test suites and deploys the website from `main`. Actions are pinned to commit SHAs; Dependabot waits 14 days before suggesting updates.
+- The GitHub CLI (`gh`) is not installed on the owner's PC; git push works.
 
 ## Decisions made
 
-- **Hosting:** GitHub Pages first. GitHub Pages cannot send HTTP headers, so the CSP is a `<meta>` tag. `site/_headers` has the full header set for a later move to Cloudflare Pages or Netlify.
-- **The ad and tracking server check runs on a click, not automatically.** It reveals the visitor's IP to ad companies, which contradicts the page's privacy promise and, under EU guidance (EDPB Guidelines 2/2023), needs consent. `autoRunLiveProbe` in `site/js/config.js` can change this if a consent step is added.
-- **No web fonts, no third-party scripts, no storage, no analytics.** Any of these would leak visits to a third party.
-- **Every outside server is listed in `site/js/config.js`.** `scripts/build.mjs` generates the CSP from it, and CI fails if they drift.
-- **DOM is built with `textContent` only**, never `innerHTML`.
-- **Redesign (28 October 2026).** The page now leads with a verdict, then a privacy checkup where every failed check has fixes for the visitor's own browser, then the full details, then account links. It follows Material 3 style and is written for a reading age of about 9. The standards, the research behind them and the sources are in `.claude/skills/they-spy-design/SKILL.md`. Load that skill before changing the site.
-- **Unfinished features stay hidden.** The live ad slot card only appears when `adSlot` is configured. The extension is mentioned once in the footer's "Coming next".
-- **Recommended tools:** uBlock Origin Lite (all major browsers), uBlock Origin (Firefox) and Privacy Badger (to send the do-not-sell signal). All are free, open source and not commercial. Re-check that the advice in `site/js/advice.js` is still current about every six months.
+- **Nothing leaves the device.** No analytics, no storage on the website, no third-party scripts or fonts, no server. The extension has `connect-src 'none'`.
+- **Website hosting:** GitHub Pages, so the CSP is a `<meta>` tag generated from `site/js/config.js` by `scripts/build.mjs`; CI fails if they drift. `site/_headers` has the full header set for a later move to Cloudflare Pages or Netlify.
+- **The website's ad server check runs only on a click**, because it reveals the visitor's IP to ad companies (EDPB Guidelines 2/2023).
+- **DOM is built with `textContent` only**, never `innerHTML` (enforced by lint in the extension).
+- **Tracker data** comes from AdGuard companiesdb (pinned commit, refresh with `extension/scripts/update-trackers.mjs`); pixel decoders are adapted from Omnibug. Credited in `THIRD_PARTY_NOTICES.md`.
+- **Interests and patterns are estimates**, labelled as such; health is flagged as sensitive. Never a psychological score.
+- **Weekly recap notification:** considered and dropped by the owner.
+- **Licence:** MIT.
+
+## Mobile (parked by the owner on 29 October 2026)
+
+Research done, nothing built. Key facts:
+- UK phones are about 45% Safari on iPhone and 45% Chrome on Android; neither can run the extension as it is.
+- Firefox for Android should run it already (untested).
+- iPhone: a small iOS app containing a Safari Web Extension, detecting trackers from the page's resource list instead of watching requests. Needs a new ADR, a Mac, Xcode and an Apple Developer account.
+- Android: an app with an on-device VPN (reusing Apache-licensed parts of DuckDuckGo App Tracking Protection or Rethink; TrackerControl is GPL). Shows which ad companies each app contacts, but not basket details, because traffic is encrypted. Needs Google Play's VpnService declaration.
+- **Do not** route the user's DNS to a server we run: it would send all browsing off the device and break the core promise.
 
 ## Not yet verified
 
-- The server check against the real ad servers (tested only with simulated blocked, reachable and offline responses).
-- The fingerprint protection check on real Brave, Safari 26 and Firefox Strict. It was tested in Playwright's Chromium, Firefox and WebKit builds, which don't scramble canvas reads by default.
-- The per-browser fix steps were written from research, not by clicking through each browser. Check them on real devices, especially iPhone and Android.
-- The GitHub Actions workflow (`.github/workflows/pages.yml`) has not run yet. It now installs Chromium, Firefox and WebKit.
-- The live ad slot (`site/js/adslot.js`) is off by default and has never been tested. It needs a Google Ad Manager ad unit.
-
-External links were checked on 28 October 2026 and all respond. Google and Meta pages need you to be signed in.
+- The extension on real installs of Chrome, Edge and Firefox with everyday browsing (only automated tests so far).
+- The website's server check against the real ad servers, and the fingerprint check on real Brave, Safari 26 and Firefox Strict.
+- The per-browser fix steps on the website were written from research, not by clicking through each browser.
+- The live ad slot (`site/js/adslot.js`) is off by default and has never been tested.
 
 ## Next steps
 
-1. Enable GitHub Pages: repo **Settings → Pages → Source: GitHub Actions**, then check the first workflow run passes.
-2. Open the site on real devices (Chrome, Safari on iPhone, Firefox, Brave), with and without an ad blocker. Run the server check and follow a few fix steps to confirm they match what each browser shows.
-3. Choose a licence (for example MIT) if the project should be open source.
-4. Add a social share image (`og:image`) and a custom domain if wanted.
-5. Build the data export importer (step 2 of the plan). Research the current export formats for each platform first, since they change.
+1. Check the first deploy from `main` worked and the live site looks right on a phone and a laptop.
+2. Use the extension for a few days of normal browsing and note anything confusing or wrong.
+3. Milestone 5: an extension page on the website (install buttons for the visitor's browser, what it can and can't see), a privacy policy including the Chrome Web Store Limited Use statement, store listings and screenshots, then `npm run zip` and submit to the Chrome Web Store, Edge Add-ons and Firefox Add-ons.
+4. The data download importer: visitors open their Google, Meta or TikTok data download on the website and it is read locally in the browser. Research the current export formats first, since they change.
+5. Re-check the advice in `site/js/advice.js` and the facts in the design skill about every six months.
