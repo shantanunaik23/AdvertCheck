@@ -190,7 +190,8 @@ export default defineUnlistedScript({
       const count = watching(items.length);
       if (!open) {
         const pill = el('button', 'pill', `They Spy · ${String(items.length)}`);
-        pill.setAttribute('aria-label', `${count}. Show details`);
+        // Starts with the visible text, so voice control users can say it (WCAG 2.5.3).
+        pill.setAttribute('aria-label', `They Spy · ${count}. Show details`);
         pill.setAttribute('aria-expanded', 'false');
         pill.addEventListener('click', () => {
           open = true;
