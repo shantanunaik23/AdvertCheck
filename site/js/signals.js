@@ -4,20 +4,39 @@
 const LEVELS = { low: 'Low', medium: 'Medium', high: 'High' };
 export { LEVELS };
 
-function signal(group, label, value, level, why) {
-  return { group, label, value: value === undefined || value === null || value === '' ? 'Not available' : String(value), level, why };
+const NA = 'Not available';
+
+function signal(group, label, value, level, why, technical) {
+  return { group, label, value: value === undefined || value === null || value === '' ? NA : String(value), level, why, technical };
+}
+
+// Which browser family to give advice for. Brave hides itself in the user
+// agent, but exposes navigator.brave.
+export function browserFamily(ua, brands) {
+  if (navigator.brave) return 'brave';
+  const names = (brands || []).map((b) => b.brand).join(' ');
+  if (/Edg\//.test(ua) || /Edge/.test(names)) return 'edge';
+  if (/SamsungBrowser/.test(ua)) return 'samsung';
+  if (/OPR\//.test(ua) || /Opera/.test(names)) return 'opera';
+  if (/Firefox\/|FxiOS/.test(ua)) return 'firefox';
+  if (/CriOS/.test(ua)) return 'chrome';
+  if (/Chrome\//.test(ua) || /Chrome/.test(names)) return 'chrome';
+  if (/Safari\//.test(ua)) return 'safari';
+  return 'other';
 }
 
 function describeBrowser(ua, brands) {
+  if (navigator.brave) return 'Brave';
   if (brands && brands.length) {
     const named = brands.find((b) => !/not.?a.?brand|chromium/i.test(b.brand)) || brands[0];
-    return `${named.brand} ${named.version}`;
+    return `${named.brand.replace(/^Google /, '')} ${named.version}`;
   }
   const rules = [
     [/Edg\/([\d]+)/, 'Edge'],
     [/OPR\/([\d]+)/, 'Opera'],
-    [/Firefox\/([\d]+)/, 'Firefox'],
-    [/Chrome\/([\d]+)/, 'Chrome'],
+    [/SamsungBrowser\/([\d]+)/, 'Samsung Internet'],
+    [/(?:Firefox|FxiOS)\/([\d]+)/, 'Firefox'],
+    [/(?:Chrome|CriOS)\/([\d]+)/, 'Chrome'],
     [/Version\/([\d]+).*Safari/, 'Safari'],
   ];
   for (const [re, name] of rules) {
@@ -27,9 +46,12 @@ function describeBrowser(ua, brands) {
   return 'Unknown browser';
 }
 
+// iPads report themselves as Macs, but Macs have no touch screen.
 function describeOS(ua, platform) {
+  if (/Mac OS X/.test(ua) && navigator.maxTouchPoints > 1) return 'iPadOS';
   if (platform) return platform;
-  if (/iPhone|iPad|iPod/.test(ua)) return 'iOS';
+  if (/iPhone|iPod/.test(ua)) return 'iOS';
+  if (/iPad/.test(ua)) return 'iPadOS';
   if (/Android/.test(ua)) return 'Android';
   if (/Windows/.test(ua)) return 'Windows';
   if (/Mac OS X/.test(ua)) return 'macOS';
@@ -38,8 +60,24 @@ function describeOS(ua, platform) {
   return 'Unknown';
 }
 
+// Client hints report Windows 11 as platform version 13 or above.
+function osWithVersion(os, version) {
+  if (!version) return os;
+  if (os === 'Windows') {
+    const major = Number(version.split('.')[0]);
+    if (major >= 13) return 'Windows 11';
+    if (major > 0) return 'Windows 10';
+    return 'Windows';
+  }
+  return `${os} ${version.split('.').slice(0, 2).join('.')}`;
+}
+
 function media(query) {
   try { return window.matchMedia(query).matches; } catch { return false; }
+}
+
+function languageName(tag) {
+  try { return new Intl.DisplayNames(['en'], { type: 'language' }).of(tag) || tag; } catch { return tag; }
 }
 
 // Short, stable hash. Uses SHA-256 where available (secure contexts),
@@ -71,9 +109,9 @@ function canvasPrint() {
     ctx.fillStyle = '#f60';
     ctx.fillRect(100, 1, 62, 20);
     ctx.fillStyle = '#069';
-    ctx.fillText('Ad Mirror, 1.0 \u{1F50D}', 2, 15);
+    ctx.fillText('They Spy, 1.0 \u{1F50D}', 2, 15);
     ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
-    ctx.fillText('Ad Mirror, 1.0 \u{1F50D}', 4, 17);
+    ctx.fillText('They Spy, 1.0 \u{1F50D}', 4, 17);
     ctx.globalCompositeOperation = 'multiply';
     ctx.fillStyle = 'rgb(255,0,255)';
     ctx.beginPath();
@@ -82,6 +120,29 @@ function canvasPrint() {
     return c.toDataURL();
   } catch {
     return null;
+  }
+}
+
+// Browsers that resist fingerprinting (Brave, Firefox with resist
+// fingerprinting, Safari's advanced protection) add noise to canvas reads.
+// Draw one solid colour and check it comes back exactly as drawn.
+function canvasScrambled() {
+  try {
+    const c = document.createElement('canvas');
+    c.width = 16;
+    c.height = 16;
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return false;
+    ctx.fillStyle = 'rgb(10, 20, 30)';
+    ctx.fillRect(0, 0, 16, 16);
+    const px = ctx.getImageData(0, 0, 16, 16).data;
+    for (let i = 0; i < px.length; i += 4) {
+      if (px[i] !== 10 || px[i + 1] !== 20 || px[i + 2] !== 30 || px[i + 3] !== 255) return true;
+    }
+    return false;
+  } catch {
+    // Reading the canvas was refused outright, which also protects the visitor.
+    return true;
   }
 }
 
@@ -140,15 +201,19 @@ export async function collectSignals() {
   const nav = navigator;
   const ua = nav.userAgent || '';
   const uaData = nav.userAgentData;
+  const brands = uaData && uaData.brands;
   const hints = await clientHints();
   const tz = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return null; } })();
   const offset = -new Date().getTimezoneOffset() / 60;
   const languages = (nav.languages && nav.languages.length ? nav.languages : [nav.language]).filter(Boolean);
-  const browser = describeBrowser(ua, uaData && uaData.brands);
+  const browser = describeBrowser(ua, brands);
+  const family = browserFamily(ua, brands);
   const os = describeOS(ua, uaData && uaData.platform);
-  const mobile = uaData ? uaData.mobile : /Mobi|Android|iPhone/.test(ua);
+  const osLabel = osWithVersion(os, hints && hints.platformVersion);
+  const mobile = os === 'iPadOS' || (uaData ? uaData.mobile : /Mobi|Android|iPhone/.test(ua));
   const conn = nav.connection;
   const canvas = canvasPrint();
+  const scrambled = canvasScrambled();
   const gl = webglInfo();
   const fonts = detectFonts();
   const dnt = nav.doNotTrack === '1' || window.doNotTrack === '1';
@@ -157,62 +222,67 @@ export async function collectSignals() {
   const canvasHash = canvas ? await hash(canvas) : null;
   const glHash = gl ? await hash(`${gl.vendor}|${gl.renderer}`) : null;
   const screenText = `${screen.width} × ${screen.height}`;
+  const place = tz && tz.includes('/') ? tz.split('/').pop().replace(/_/g, ' ') : tz;
 
   const signals = [
-    signal('Device', 'Operating system', hints && hints.platformVersion ? `${os} ${hints.platformVersion}` : os, 'low',
+    signal('Your device', 'Operating system', osLabel, 'low',
       'Ad prices and product choices can differ by platform. Some retailers have shown Mac users pricier options.'),
-    signal('Device', 'Device type', mobile ? 'Phone or tablet' : 'Desktop or laptop', 'low',
-      'Decides which ad formats you get and whether app-install ads are shown.'),
-    signal('Device', 'Device model', hints && hints.model ? hints.model : null, 'medium',
-      'A specific model hints at income and how recently you bought your device.'),
-    signal('Device', 'Screen', `${screenText} at ${window.devicePixelRatio || 1}× density`, 'medium',
-      'Screen size and density narrow down your exact device.'),
-    signal('Device', 'Processor cores', nav.hardwareConcurrency, 'medium',
+    signal('Your device', 'Type of device', mobile ? 'Phone or tablet' : 'Computer', 'low',
+      'Decides which ad formats you get and whether you see adverts for apps.'),
+    signal('Your device', 'Device model', hints && hints.model ? hints.model : null, 'medium',
+      'A specific model hints at your income and how recently you bought your device.'),
+    signal('Your device', 'Screen size', `${screenText} at ${window.devicePixelRatio || 1}× sharpness`, 'medium',
+      'Screen size and sharpness narrow down your exact device.'),
+    signal('Your device', 'Processor cores', nav.hardwareConcurrency, 'medium',
       'Combined with other details, hardware specs help single you out.'),
-    signal('Device', 'Memory', nav.deviceMemory ? `About ${nav.deviceMemory} GB` : null, 'medium',
-      'A rough indicator of how high-end your device is.'),
-    signal('Device', 'Touch screen', nav.maxTouchPoints > 0 ? `Yes (${nav.maxTouchPoints} touch points)` : 'No', 'low',
+    signal('Your device', 'Memory', nav.deviceMemory ? `About ${nav.deviceMemory} GB` : null, 'medium',
+      'A rough sign of how expensive your device is.'),
+    signal('Your device', 'Touch screen', nav.maxTouchPoints > 0 ? `Yes, ${nav.maxTouchPoints} touch points` : 'No', 'low',
       'Separates touch laptops and tablets from ordinary computers.'),
 
-    signal('Browser', 'Browser', browser, 'low',
+    signal('Your browser', 'Browser', browser, 'low',
       'Used to choose ad formats and to spot people who block ads.'),
-    signal('Browser', 'Full browser identity', ua, 'medium',
-      'Sent with every request you make. Rare versions make you easier to recognise.'),
-    signal('Browser', 'Connection type', conn && conn.effectiveType ? conn.effectiveType.toUpperCase() : null, 'low',
+    signal('Your browser', 'Browser ID text', ua, 'medium',
+      'Your browser sends this with every page you open. Rare versions make you easier to recognise.', 'User agent string'),
+    signal('Your browser', 'Connection speed', conn && conn.effectiveType ? conn.effectiveType.toUpperCase() : null, 'low',
       'Lets advertisers guess whether you are on Wi-Fi or mobile data.'),
-    signal('Browser', 'Dark mode', media('(prefers-color-scheme: dark)') ? 'On' : 'Off', 'low',
+    signal('Your browser', 'Dark mode', media('(prefers-color-scheme: dark)') ? 'On' : 'Off', 'low',
       'A small preference, but every preference adds to your profile.'),
 
-    signal('Location', 'Time zone', tz ? `${tz} (UTC${offset >= 0 ? '+' : ''}${offset})` : null, 'medium',
-      'Places you in a region without asking for location permission.'),
-    signal('Location', 'Languages', languages.join(', '), 'medium',
-      'Shows your likely country and the languages ads will be written in.'),
-    signal('Location', 'IP address', 'Visible to every server you contact', 'high',
-      'Reveals your approximate city and internet provider. This page has no server, so it never sees it.'),
+    signal('Where you are', 'Time zone', tz ? `${tz.replace(/_/g, ' ')} (UTC${offset >= 0 ? '+' : ''}${offset})` : null, 'medium',
+      'Places you in a region without asking for your location.'),
+    signal('Where you are', 'Languages', languages.map(languageName).join(', '), 'medium',
+      'Shows your likely country and the language ads will be written in.'),
+    signal('Where you are', 'IP address', 'Seen by every server you contact', 'high',
+      'Reveals your rough location and internet provider. They Spy has no server, so it never sees yours.'),
 
-    signal('Privacy settings', 'Global Privacy Control', gpc ? 'On: you ask sites not to sell your data' : 'Off', 'low',
-      'A legal opt-out signal in some places, such as California. Most sites ignore it elsewhere.'),
+    signal('Privacy settings', 'Do-not-sell signal', gpc ? 'On' : 'Off', 'low',
+      'Asks sites not to sell or share your data. Sites must obey it in California and some other US states.', 'Global Privacy Control'),
     signal('Privacy settings', 'Do Not Track', dnt ? 'On' : 'Off', 'low',
-      'An older signal that most advertisers ignore. Turning it on can make you stand out.'),
+      'An older signal that advertisers ignore. Firefox has removed it. Turning it on can make you stand out.'),
     signal('Privacy settings', 'Cookies', nav.cookieEnabled ? 'Allowed' : 'Blocked', 'low',
-      'Cookies let ad networks recognise you across sites.'),
+      'Cookies let ad networks recognise you as you move between sites.'),
     signal('Privacy settings', 'Page you came from', document.referrer || 'Hidden or none', 'medium',
-      'Tells the site where you were just browsing.'),
+      'Tells the site where you were just browsing.', 'Referrer'),
 
-    signal('Fingerprint', 'Canvas fingerprint', canvasHash, 'high',
-      'Your device draws images in a slightly unique way. Trackers use this as an ID that survives clearing cookies.'),
-    signal('Fingerprint', 'Graphics card', gl ? gl.renderer : null, 'high',
-      'Your graphics hardware name is readable by any page and is fairly rare.'),
-    signal('Fingerprint', 'Installed fonts', fonts.length ? `${fonts.length} detected: ${fonts.slice(0, 8).join(', ')}${fonts.length > 8 ? ', …' : ''}` : null, 'high',
-      'The fonts you have installed reflect your software and work, and they vary a lot between people.'),
+    signal('Fingerprint', 'How your device draws images', canvasHash ? (scrambled ? `${canvasHash} (scrambled by your browser)` : canvasHash) : null, 'high',
+      'Every device draws text and shapes slightly differently. Trackers turn the result into an ID that survives clearing cookies.', 'Canvas fingerprint'),
+    signal('Fingerprint', 'Graphics chip', gl ? gl.renderer : null, 'high',
+      'Any page can read the name of your graphics hardware, and it is fairly rare.', 'WebGL renderer'),
+    signal('Fingerprint', 'Installed fonts', fonts.length ? `${fonts.length} found: ${fonts.slice(0, 6).join(', ')}${fonts.length > 6 ? ', …' : ''}` : null, 'high',
+      'The fonts on your device reflect the software you use, and vary a lot between people.'),
   ];
 
   const idParts = [ua, screenText, window.devicePixelRatio, tz, languages.join(','), nav.hardwareConcurrency, canvasHash, glHash, fonts.join(',')];
   const fingerprintId = await hash(idParts.join('||'));
-  const highReadable = signals.filter((s) => s.level === 'high' && s.value !== 'Not available' && s.label !== 'IP address').length;
+  const highReadable = signals.filter((s) => s.group === 'Fingerprint' && s.value !== NA).length;
 
   return {
     signals,
-    summary: { browser, os, mobile, tz, languages, fingerprintId, highReadable, highTotal: 3 },
+    summary: {
+      browser, family, os, osLabel, mobile, tz, place, languages,
+      language: languages[0] ? languageName(languages[0]) : null,
+      fingerprintId, highReadable, highTotal: 3, scrambled, gpc,
+    },
   };
 }

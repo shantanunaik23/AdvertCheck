@@ -1,0 +1,6 @@
+.output/
+.wxt/
+playwright-report/
+test-results/
+data/trackers.json
+data/companies.json

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>They Spy</title>
+  </head>
+  <body>
+    <a class="skip" href="#view">Skip to content</a>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="#overview" aria-label="They Spy overview">
+          <span class="brand-mark" id="brand-mark"></span>
+          <span>They Spy</span>
+        </a>
+        <div class="topbar-end">
+          <p class="chip chip-good" id="privacy-chip">Stored on this device only</p>
+          <label class="switch mode-switch" for="advanced">
+            <span>Advanced mode</span>
+            <input type="checkbox" role="switch" id="advanced" />
+          </label>
+        </div>
+      </div>
+    </header>
+    <div class="layout" id="layout">
+      <nav class="nav" aria-label="Dashboard sections" id="nav"></nav>
+      <main class="view" id="view" tabindex="-1" aria-live="polite"></main>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

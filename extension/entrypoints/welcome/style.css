@@ -1,0 +1,84 @@
+.welcome {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
+  display: grid;
+  gap: 32px;
+}
+.hero {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  letter-spacing: -0.02em;
+}
+.hero p {
+  font-size: 1.125rem;
+  color: var(--ink-2);
+  max-width: 38em;
+}
+.three {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+.three h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.0625rem;
+  margin-bottom: 10px;
+}
+.three li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 8px;
+  padding: 4px 0;
+  color: var(--ink-2);
+}
+.three li .icon {
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+}
+.yes .icon {
+  color: var(--good);
+}
+.no .icon {
+  color: var(--bad);
+}
+.access {
+  border-color: transparent;
+  background: var(--warn-container);
+  color: var(--on-warn-container);
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+.explain {
+  display: grid;
+  gap: 8px;
+}
+.explain h2 {
+  font-size: 1.0625rem;
+}
+.explain p {
+  color: var(--ink-2);
+}
+.warning-quote {
+  font-weight: 600;
+  color: var(--ink);
+}
+.next {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.next .btn {
+  min-height: 48px;
+  padding: 0 28px;
+  font-size: 0.9375rem;
+}

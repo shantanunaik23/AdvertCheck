@@ -1,5 +1,5 @@
 {
-  "name": "ad-mirror",
+  "name": "they-spy",
   "version": "0.1.0",
   "private": true,
   "description": "See what every website learns about you the moment you arrive, and whether ad networks can reach your browser.",
@@ -11,6 +11,15 @@
     "test": "node scripts/build.mjs --check && node tests/page.test.mjs"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "playwright": "1.63.0"
+  },
+  "workspaces": [
+    "extension"
+  ],
+  "license": "MIT",
+  "overrides": {
+    "shell-quote": "1.12.0",
+    "playwright-core": "1.63.0"
   }
 }
