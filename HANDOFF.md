@@ -31,7 +31,8 @@ Milestones 1–4 of the plan are done. Milestone 5 (website page and store relea
 - Extension: `npm run verify` in `extension/` runs typecheck, lint, 55 unit tests, build, manifest check, Firefox lint and 9 end-to-end tests. All passed on 29 October 2026.
 - Try the extension: `npm run build` in `extension/`, then load `extension/.output/chrome-mv3` as an unpacked extension (`chrome://extensions`, Developer mode).
 - CI (`.github/workflows/pages.yml`) runs both test suites and deploys the website from `main`. Actions are pinned to commit SHAs; Dependabot waits 14 days before suggesting updates.
-- The GitHub CLI (`gh`) is not installed on the owner's PC; git push works.
+- The GitHub CLI (`gh`) is installed (29 October 2026) and signed in as shantanunaik23. If it isn't on PATH yet, run it as `"C:\Program Files\GitHub CLI\gh.exe"`.
+- Firefox Add-ons: the listing text is in `docs/store/firefox-listing.md`; version 0.1.0 was filled in on AMO on 29 October 2026 for the owner to submit.
 
 ## Decisions made
 
